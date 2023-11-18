@@ -5,6 +5,7 @@
   "definitions": {
     "indentSize": {
       "description": "The number of characters for an indent.",
+      "default": 2,
       "type": "number"
     },
     "indentStyle": {
@@ -21,6 +22,7 @@
     },
     "lineWidth": {
       "description": "How many characters can be written on a single line.",
+      "default": 80,
       "type": "number"
     },
     "quoteStyle": {
