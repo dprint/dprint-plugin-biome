@@ -103,21 +103,11 @@ jobs:
 
           [Install](https://dprint.dev/install/) and [setup](https://dprint.dev/setup/) dprint.
 
-          Then in your project's dprint configuration file:
+          Then in your project's directory with a dprint.json file, run:
 
-          1. Specify the plugin url in the `"plugins"` array.
-          2. Add a `"biome"` configuration property if desired.
-             ```jsonc
-             {
-               // ...etc...
-               "biome": {
-                 // biome config goes here
-               },
-               "plugins": [
-                 "https://plugins.dprint.dev/biome-${{ steps.get_tag_version.outputs.TAG_VERSION }}.wasm"
-               ]
-             }
-             ```
+          ```shellsession
+          dprint config add biome
+          ```
 
           ## JS Formatting API
 
