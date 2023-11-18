@@ -1,0 +1,29 @@
+{
+  "name": "@dprint/biome",
+  "version": "0.0.0",
+  "description": "Wasm buffer for dprint-plugin-biome.",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dprint/dprint-plugin-biome.git"
+  },
+  "keywords": [
+    "biome",
+    "code",
+    "formatter",
+    "dprint"
+  ],
+  "author": "David Sherret",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dprint/dprint-plugin-biome/issues"
+  },
+  "homepage": "https://github.com/dprint/dprint-plugin-biome#readme",
+  "scripts": {
+    "test": "node index.test.js"
+  },
+  "devDependencies": {
+    "@dprint/formatter": "~0.1.4"
+  }
+}

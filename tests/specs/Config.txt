@@ -1,0 +1,23 @@
+~~ indentStyle: space, semicolons: asNeeded, arrowParentheses: asNeeded, trailingComma: none, quoteStyle: single, quoteProperties: preserve ~~
+== should format with config ==
+class Test {
+prop: string;
+}
+const t = (a) => 5;
+
+call(asdfasdfasdfasdfasdfasdf, asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfa)
+const asdf = "test";
+const obj = { "prop": 5 }
+
+[expect]
+class Test {
+  prop: string
+}
+const t = a => 5
+
+call(
+  asdfasdfasdfasdfasdfasdf,
+  asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfa
+)
+const asdf = 'test'
+const obj = { 'prop': 5 }

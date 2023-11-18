@@ -1,0 +1,14 @@
+-- file.json --
+~~ json.indentStyle: space, json.indentSize: 4, json.lineWidth: 20, javascript.indentStyle: tab, javascript.indentSize: 8, javascript.lineWidth: 1000 ~~
+== test json ==
+{
+  "other": 5, "asdf": ["asdfasdfasdfasdfasdfasdfasdfasdf", 1212]}
+
+[expect]
+{
+    "other": 5,
+    "asdf": [
+        "asdfasdfasdfasdfasdfasdfasdfasdf",
+        1212
+    ]
+}

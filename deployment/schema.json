@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://plugins.dprint.dev/dprint/dprint-plugin-biome/0.0.0/schema.json",
+  "type": "object",
+  "definitions": {
+    "indentSize": {
+      "description": "The number of characters for an indent.",
+      "type": "number"
+    },
+    "indentStyle": {
+      "description": "Whether to use tabs or spaces.",
+      "type": "string",
+      "default": "tab",
+      "oneOf": [{
+        "const": "tab",
+        "description": "Use tabs."
+      }, {
+        "const": "space",
+        "description": "Use spaces."
+      }]
+    },
+    "lineWidth": {
+      "description": "How many characters can be written on a single line.",
+      "type": "number"
+    },
+    "quoteStyle": {
+      "description": "The type of quote used when representing string literals.",
+      "type": "string",
+      "default": "double",
+      "oneOf": [{
+        "const": "double",
+        "description": "Use double quotes."
+      }, {
+        "const": "single",
+        "description": "Use single quotes"
+      }]
+    }
+  },
+  "properties": {
+    "indentSize": {
+      "$ref": "#/definitions/indentSize"
+    },
+    "indentStyle": {
+      "$ref": "#/definitions/indentStyle"
+    },
+    "semicolons": {
+      "description": "Whether to use semicolons.",
+      "type": "string",
+      "default": "always",
+      "oneOf": [{
+        "const": "always",
+        "description": "Semicolons are always added at the end of each statement."
+      }, {
+        "const": "asNeeded",
+        "description": "Semicolons are added only in places where it's needed, to protect from ASI."
+      }]
+    },
+    "lineWidth": {
+      "$ref": "#/definitions/lineWidth"
+    },
+    "javascript.indentStyle": {
+      "$ref": "#/definitions/indentStyle"
+    },
+    "javascript.lineWidth": {
+      "$ref": "#/definitions/lineWidth"
+    },
+    "javascript.indentSize": {
+      "$ref": "#/definitions/indentSize"
+    },
+    "json.indentStyle": {
+      "$ref": "#/definitions/indentStyle"
+    },
+    "json.lineWidth": {
+      "$ref": "#/definitions/lineWidth"
+    },
+    "json.indentSize": {
+      "$ref": "#/definitions/indentSize"
+    },
+    "quoteStyle": {
+      "$ref": "#/definitions/quoteStyle"
+    },
+    "jsxQuoteStyle": {
+      "$ref": "#/definitions/quoteStyle"
+    },
+    "trailingComma": {
+      "description": "Print trailing commas wherever possible in multi-line comma-separated syntactic structures.",
+      "type": "string",
+      "default": "all",
+      "oneOf": [{
+        "const": "all",
+        "description": "Trailing commas are always added."
+      }, {
+        "const": "es5",
+        "description": "Trailing commas are added only in places where it's supported in ES5."
+      }, {
+        "const": "none",
+        "description": "Trailing commas are never added."
+      }]
+    },
+    "arrowParentheses": {
+      "description": "Whether to add non-necessary parentheses to arrow functions.",
+      "type": "string",
+      "default": "always",
+      "oneOf": [{
+        "const": "always",
+        "description": "Parentheses are always added."
+      }, {
+        "const": "asNeeded",
+        "description": "Parentheses are added only when necessary."
+      }]
+    },
+    "quoteProperties": {
+      "description": "Whether property names inside objects should be quoted.",
+      "type": "string",
+      "default": "asNeeded",
+      "oneOf": [{
+        "const": "asNeeded",
+        "description": "Quotes when necessary."
+      }, {
+        "const": "preserve",
+        "description": "Maintains quotes on properties."
+      }]
+    }
+  }
+}

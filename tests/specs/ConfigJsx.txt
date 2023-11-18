@@ -1,0 +1,9 @@
+-- file.tsx --
+~~ jsxQuoteStyle: single ~~
+== should format ==
+const test = "";
+const test2 = <div prop="asdf" />;
+
+[expect]
+const test = "";
+const test2 = <div prop='asdf' />;

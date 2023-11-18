@@ -1,0 +1,13 @@
+~~ javascript.indentStyle: space, javascript.indentSize: 4, javascript.lineWidth: 20, json.indentStyle: tab, json.indentSize: 8, json.lineWidth: 1000 ~~
+== test json ==
+const test = {
+  "other": 5, "asdf": ["asdfasdfasdfasdfasdfasdfasdfasdf", 1212]}
+
+[expect]
+const test = {
+    other: 5,
+    asdf: [
+        "asdfasdfasdfasdfasdfasdfasdfasdf",
+        1212,
+    ],
+};

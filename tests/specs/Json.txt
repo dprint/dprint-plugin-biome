@@ -1,0 +1,10 @@
+-- file.json --
+== test json ==
+{
+  "other": 5, "asdf": 2}
+
+[expect]
+{
+	"other": 5,
+	"asdf": 2
+}
