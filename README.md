@@ -14,7 +14,7 @@ Then in your project's directory with a dprint.json file, run:
 dprint config add biome
 ```
 
-### Configuration
+## Configuration
 
 To add configuration, specify a `"biome"` key in your dprint.json:
 
@@ -32,3 +32,8 @@ To add configuration, specify a `"biome"` key in your dprint.json:
 ```
 
 For an overview of the config, see https://dprint.dev/plugins/biome/config/
+
+## JS Formatting API
+
+- [JS Formatter](https://github.com/dprint/js-formatter) - Browser/Deno and Node
+- [npm package](https://www.npmjs.com/package/@dprint/biome)
