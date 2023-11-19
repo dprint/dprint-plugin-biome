@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "automation": "https://raw.githubusercontent.com/dprint/automation/0.8.1/mod.ts",
+    "octokit": "npm:octokit@^3.1"
+  }
+}
