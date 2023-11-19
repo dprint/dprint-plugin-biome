@@ -1,0 +1,29 @@
+name: check_updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    # do this once per day
+    - cron: "0 7 * * *"
+
+jobs:
+  build:
+    name: check updates
+    if: github.repository == 'dprint/dprint-plugin-biome'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_DPRINTBOT_PAT }}
+
+      - uses: denoland/setup-deno@v1
+      - uses: dsherret/rust-toolchain-file@v1
+
+      - name: Run script
+        run: |
+          git config user.email "dprintbot@users.noreply.github.com"
+          git config user.name "dprintbot"
+          deno run -A ./scripts/update.ts
