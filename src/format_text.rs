@@ -36,6 +36,14 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         },
       );
       if tree.has_errors() {
+        let trimmed_text = input_text.trim();
+        if trimmed_text.is_empty() {
+          return Ok(if trimmed_text == input_text {
+            None
+          } else {
+            Some(trimmed_text.to_string())
+          });
+        }
         bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
       }
 
