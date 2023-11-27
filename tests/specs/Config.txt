@@ -1,4 +1,4 @@
-~~ indentStyle: space, semicolons: asNeeded, arrowParentheses: asNeeded, trailingComma: none, quoteStyle: single, quoteProperties: preserve ~~
+~~ indentStyle: space, semicolons: asNeeded, arrowParentheses: asNeeded, trailingComma: none, quoteStyle: single, quoteProperties: preserve, bracketSpacing: false ~~
 == should format with config ==
 class Test {
 prop: string;
@@ -20,4 +20,4 @@ call(
   asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfa
 )
 const asdf = 'test'
-const obj = { 'prop': 5 }
+const obj = {'prop': 5}
