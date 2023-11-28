@@ -1,5 +1,6 @@
 use super::Configuration;
 use super::IndentStyle;
+use super::LineEnding;
 use dprint_core::configuration::*;
 
 /// Resolves configuration from a collection of key value strings.
@@ -43,6 +44,13 @@ pub fn resolve_config(
   );
 
   let resolved_config = Configuration {
+    line_ending: get_nullable_value(&mut config, "lineEnding", &mut diagnostics).or_else(|| {
+      match global_config.new_line_kind {
+        Some(NewLineKind::CarriageReturnLineFeed) => Some(LineEnding::Crlf),
+        Some(NewLineKind::LineFeed) => Some(LineEnding::Lf),
+        _ => None,
+      }
+    }),
     javascript_indent_style: get_nullable_value(&mut config, "javascript.indentStyle", &mut diagnostics)
       .or(indent_style),
     javascript_indent_size: get_nullable_value(&mut config, "javascript.indentSize", &mut diagnostics).or(indent_size),
@@ -56,6 +64,8 @@ pub fn resolve_config(
     semicolons: get_nullable_value(&mut config, "semicolons", &mut diagnostics),
     arrow_parentheses: get_nullable_value(&mut config, "arrowParentheses", &mut diagnostics),
     trailing_comma: get_nullable_value(&mut config, "trailingComma", &mut diagnostics),
+    bracket_same_line: get_nullable_value(&mut config, "bracketSameLine", &mut diagnostics),
+    bracket_spacing: get_nullable_value(&mut config, "bracketSpacing", &mut diagnostics),
   };
 
   diagnostics.extend(get_unknown_property_diagnostics(config));

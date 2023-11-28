@@ -39,6 +39,21 @@
     }
   },
   "properties": {
+    "lineEnding": {
+      "description": "The kind of line ending.",
+      "type": "string",
+      "default": "lf",
+      "oneOf": [{
+        "const": "lf",
+        "description": "Line feed."
+      }, {
+        "const": "crlf",
+        "description": "Carriage return, line feed."
+      }, {
+        "const": "cr",
+        "description": "Carriage return."
+      }]
+    },
     "indentSize": {
       "$ref": "#/definitions/indentSize"
     },
@@ -122,6 +137,16 @@
         "const": "preserve",
         "description": "Maintains quotes on properties."
       }]
+    },
+    "bracketSameLine": {
+      "description": "Place the last angle bracket in JSX tags on the same line as the last attribute.",
+      "default": false,
+      "type": "boolean"
+    },
+    "bracketSpacing": {
+      "description": "Surround the inner contents of some braces with spaces.",
+      "default": true,
+      "type": "boolean"
     }
   }
 }

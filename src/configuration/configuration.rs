@@ -4,6 +4,16 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, PartialEq, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum LineEnding {
+  Lf,
+  Cr,
+  Crlf,
+}
+
+generate_str_to_from![LineEnding, [Lf, "lf"], [Cr, "cr"], [Crlf, "crlf"]];
+
+#[derive(Clone, PartialEq, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum IndentStyle {
   Tab,
   Space,
@@ -60,6 +70,7 @@ generate_str_to_from![TrailingComma, [All, "all"], [Es5, "es5"], [None, "none"]]
 #[derive(Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Configuration {
+  pub line_ending: Option<LineEnding>,
   pub javascript_indent_style: Option<IndentStyle>,
   pub javascript_indent_size: Option<u8>,
   pub javascript_line_width: Option<u16>,
@@ -72,4 +83,6 @@ pub struct Configuration {
   pub quote_properties: Option<QuoteProperties>,
   pub arrow_parentheses: Option<ArrowParentheses>,
   pub trailing_comma: Option<TrailingComma>,
+  pub bracket_same_line: Option<bool>,
+  pub bracket_spacing: Option<bool>,
 }

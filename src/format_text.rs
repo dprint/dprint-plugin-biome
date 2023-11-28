@@ -1,6 +1,7 @@
 use anyhow::bail;
 use anyhow::Result;
 use biome_formatter::IndentStyle;
+use biome_formatter::LineEnding;
 use biome_formatter::LineWidth;
 use biome_js_formatter::context::trailing_comma::TrailingComma;
 use biome_js_formatter::context::ArrowParentheses;
@@ -110,6 +111,13 @@ fn build_json_options(config: &Configuration) -> JsonFormatOptions {
 
 fn build_js_options(config: &Configuration, syntax: JsFileSource) -> JsFormatOptions {
   let mut options = JsFormatOptions::new(syntax);
+  if let Some(line_ending) = config.line_ending {
+    options = options.with_line_ending(match line_ending {
+      crate::configuration::LineEnding::Crlf => LineEnding::Crlf,
+      crate::configuration::LineEnding::Lf => LineEnding::Lf,
+      crate::configuration::LineEnding::Cr => LineEnding::Cr,
+    });
+  }
   if let Some(indent_style) = config.javascript_indent_style {
     options = options.with_indent_style(match indent_style {
       crate::configuration::IndentStyle::Tab => IndentStyle::Tab,
@@ -164,6 +172,14 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> JsFormatOpt
       crate::configuration::TrailingComma::Es5 => TrailingComma::Es5,
       crate::configuration::TrailingComma::None => TrailingComma::None,
     })
+  }
+
+  if let Some(bracket_spacing) = &config.bracket_spacing {
+    options = options.with_bracket_spacing((*bracket_spacing).into());
+  }
+
+  if let Some(bracket_same_line) = &config.bracket_same_line {
+    options = options.with_bracket_same_line((*bracket_same_line).into());
   }
 
   options
