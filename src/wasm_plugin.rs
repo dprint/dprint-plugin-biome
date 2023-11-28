@@ -59,11 +59,13 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
   fn format(
     &mut self,
     file_path: &Path,
-    file_text: &str,
+    file_text: Vec<u8>,
     config: &Configuration,
-    _format_with_host: impl FnMut(&Path, String, &ConfigKeyMap) -> FormatResult,
+    _format_with_host: impl FnMut(&Path, Vec<u8>, &ConfigKeyMap) -> FormatResult,
   ) -> FormatResult {
-    super::format_text(file_path, file_text, config)
+    let text = std::str::from_utf8(&file_text)?;
+    let maybe_text = super::format_text(file_path, &text, config)?;
+    Ok(maybe_text.map(|t| t.into_bytes()))
   }
 }
 
