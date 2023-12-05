@@ -60,7 +60,6 @@ parse ━━━━━━━━━━━━━━━━━━━━━━━━�
   i ...Which is required to end this statement
   
 
-
 "#
   );
 }
@@ -77,7 +76,6 @@ fn should_fail_on_parse_error_json() {
   
   i the file ends here
   
-
 
 "#
   );

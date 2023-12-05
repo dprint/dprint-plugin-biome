@@ -16,7 +16,6 @@ use biome_json_formatter::context::JsonFormatOptions;
 use biome_json_parser::parse_json;
 use biome_json_parser::JsonParserOptions;
 use biome_json_parser::ParseDiagnostic;
-use std::fmt::Write;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -48,20 +47,19 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
       }
 
-      let options = build_json_options(config);
+      let options = build_json_options(config)?;
       let formatted = biome_json_formatter::format_node(options, &tree.syntax())?;
       let printed = formatted.print()?;
-      let output = printed.into_code();
-      output
+      printed.into_code()
     }
     Some("js" | "jsx" | "ts" | "tsx" | "cjs" | "mjs" | "cts" | "mts") => {
       let Ok(syntax) = JsFileSource::try_from(file_path) else {
         return Ok(None);
       };
 
-      let options = build_js_options(config, syntax);
+      let options = build_js_options(config, syntax)?;
       let tree = parse(
-        &input_text,
+        input_text,
         syntax,
         JsParserOptions {
           parse_class_parameter_decorators: true,
@@ -84,15 +82,18 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
 
 fn get_diagnostics_message(diagnostics: Vec<ParseDiagnostic>) -> String {
   let mut text = String::new();
-  for diagnostic in diagnostics.into_iter() {
+  for (i, diagnostic) in diagnostics.into_iter().enumerate() {
+    if i > 0 {
+      text.push('\n');
+    }
     let diagnostic: biome_diagnostics::Error = diagnostic.into();
     let error_text = biome_diagnostics::print_diagnostic_to_string(&diagnostic);
-    writeln!(&mut text, "{}", error_text).unwrap();
+    text.push_str(&error_text);
   }
   text
 }
 
-fn build_json_options(config: &Configuration) -> JsonFormatOptions {
+fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
   let mut options = JsonFormatOptions::default();
   if let Some(indent_style) = config.json_indent_style {
     options = options.with_indent_style(match indent_style {
@@ -104,12 +105,14 @@ fn build_json_options(config: &Configuration) -> JsonFormatOptions {
     options = options.with_indent_width(value.into());
   }
   if let Some(line_width) = config.json_line_width {
-    options = options.with_line_width(LineWidth::from_str(&line_width.to_string()).unwrap());
+    options = options.with_line_width(
+      LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
+    );
   }
-  options
+  Ok(options)
 }
 
-fn build_js_options(config: &Configuration, syntax: JsFileSource) -> JsFormatOptions {
+fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFormatOptions> {
   let mut options = JsFormatOptions::new(syntax);
   if let Some(line_ending) = config.line_ending {
     options = options.with_line_ending(match line_ending {
@@ -128,7 +131,9 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> JsFormatOpt
     options = options.with_indent_width(indent_width.into());
   }
   if let Some(line_width) = config.javascript_line_width {
-    options = options.with_line_width(LineWidth::from_str(&line_width.to_string()).unwrap());
+    options = options.with_line_width(
+      LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
+    );
   }
 
   if let Some(semi_colons) = config.semicolons {
@@ -182,5 +187,5 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> JsFormatOpt
     options = options.with_bracket_same_line((*bracket_same_line).into());
   }
 
-  options
+  Ok(options)
 }

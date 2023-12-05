@@ -40,17 +40,17 @@ pub fn resolve_config(
   let line_width = get_nullable_value(&mut config, "lineWidth", &mut diagnostics).or(
     global_config
       .line_width
-      .map(|l| std::cmp::max(u16::MAX as u32, l) as u16),
+      .map(|l| std::cmp::min(u16::MAX as u32, l) as u16),
   );
 
   let resolved_config = Configuration {
-    line_ending: get_nullable_value(&mut config, "lineEnding", &mut diagnostics).or_else(|| {
+    line_ending: get_nullable_value(&mut config, "lineEnding", &mut diagnostics).or(
       match global_config.new_line_kind {
         Some(NewLineKind::CarriageReturnLineFeed) => Some(LineEnding::Crlf),
         Some(NewLineKind::LineFeed) => Some(LineEnding::Lf),
         _ => None,
-      }
-    }),
+      },
+    ),
     javascript_indent_style: get_nullable_value(&mut config, "javascript.indentStyle", &mut diagnostics)
       .or(indent_style),
     javascript_indent_size: get_nullable_value(&mut config, "javascript.indentSize", &mut diagnostics).or(indent_size),
