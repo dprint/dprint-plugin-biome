@@ -14,6 +14,8 @@ Then in your project's directory with a dprint.json file, run:
 dprint config add biome
 ```
 
+Note: You do not need Biome installed globally as dprint will run Biome from the .wasm file in a sandboxed environment.
+
 ## Configuration
 
 To add configuration, specify a `"biome"` key in your dprint.json:
@@ -32,6 +34,8 @@ To add configuration, specify a `"biome"` key in your dprint.json:
 ```
 
 For an overview of the config, see https://dprint.dev/plugins/biome/config/
+
+Note: The plugin does not understand Biome's configuration file because it runs sandboxed in a Wasm runtime—it has no access to the file system in order to read Biome's config.
 
 ## JS Formatting API
 
