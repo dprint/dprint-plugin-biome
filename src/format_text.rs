@@ -104,6 +104,13 @@ fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
   if let Some(value) = config.json_indent_size {
     options = options.with_indent_width(value.into());
   }
+  if let Some(line_ending) = config.line_ending {
+    options = options.with_line_ending(match line_ending {
+      crate::configuration::LineEnding::Lf => LineEnding::Lf,
+      crate::configuration::LineEnding::Cr => LineEnding::Cr,
+      crate::configuration::LineEnding::Crlf => LineEnding::Crlf,
+    });
+  }
   if let Some(line_width) = config.json_line_width {
     options = options.with_line_width(
       LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
