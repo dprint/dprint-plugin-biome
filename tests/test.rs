@@ -45,9 +45,9 @@ fn should_fail_on_parse_error_js() {
     err.to_string(),
     r#"parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  × Const declarations must have an initialized value
+  × Const declarations must have an initialized value.
   
-  i this variable needs to be initialized
+  i This variable needs to be initialized.
   
 
 
