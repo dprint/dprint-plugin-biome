@@ -27,6 +27,10 @@ cargoToml.replaceAll(cargoTomlVersion.tag, latestTag.tag);
 $.logStep("Running tests...");
 await $`cargo test`;
 
+if (Deno.args.includes("--skip-publish")) {
+  Deno.exit(0);
+}
+
 // release
 const newVersion = cargoToml.version();
 $.logStep(`Committing and publishing ${newVersion}...`);
