@@ -32,11 +32,12 @@ if (Deno.args.includes("--skip-publish")) {
 
 $.logStep(`Committing Biome version bump commit...`);
 await $`git add .`;
-const message = `${isPatchBump ? "fix" : "feat"}: update to biome ${latestTag.tag}`;
+const message = `${isPatchBump ? "fix" : "feat"}: update to Biome ${latestTag.tag}`;
 await $`git commit -m ${message}`;
 
 $.logStep("Bumping version in Cargo.toml...");
 cargoToml.bumpCargoTomlVersion(isPatchBump ? "patch" : "minor");
+
 // release
 const newVersion = cargoToml.version();
 $.logStep(`Committing and publishing ${newVersion}...`);

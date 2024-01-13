@@ -20,8 +20,8 @@ dprint config add biome
 
 ## JS Formatting API
 
-  * [JS Formatter](https://github.com/dprint/js-formatter) - Browser/Deno and Node
-  * [npm package](https://www.npmjs.com/package/@dprint/biome)
+* [JS Formatter](https://github.com/dprint/js-formatter) - Browser/Deno and Node
+* [npm package](https://www.npmjs.com/package/@dprint/biome)
 `;
 
 console.log(text);
