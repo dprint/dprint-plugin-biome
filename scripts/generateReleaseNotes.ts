@@ -1,4 +1,4 @@
-import { generateChangeLog } from "https://raw.githubusercontent.com/dprint/automation/0.9.0/changelog.ts";
+import { generateChangeLog } from "automation";
 
 const version = Deno.args[0];
 const changelog = await generateChangeLog({
