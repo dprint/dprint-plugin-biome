@@ -536,5 +536,10 @@
     "https://raw.githubusercontent.com/dprint/automation/0.9.0/hash.ts": "b81cab5700a6d7b6a0a4ff5b60bf0e26a2827eafd747ddd4c10bc6a4887d8d94",
     "https://raw.githubusercontent.com/dprint/automation/0.9.0/mod.ts": "5f330d62cc675f3b6c464b186809d30df12830a1e4d4cbb64e1a494d058c6163",
     "https://raw.githubusercontent.com/dprint/automation/0.9.0/process_plugin.ts": "eeaaf602000563f61478ad5b2abc0809827d764e134909ff3273fdf7d4e1030c"
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:octokit@^3.1"
+    ]
   }
 }
