@@ -199,7 +199,7 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
 
 #[cfg(test)]
 mod test {
-  user super::*;
+  use super::*;
 
   #[test]
   fn strips_bom() {
