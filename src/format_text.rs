@@ -204,7 +204,7 @@ mod test {
   #[test]
   fn strips_bom() {
     let input = "\u{FEFF}{}";
-    let config = crate::configuration::ConfigurationBuilder::new().build();
+    let config = crate::configuration::Configuration::default();
     let result = format_text(std::path::Path::new("test.json"), input, &config)
       .unwrap()
       .unwrap();
