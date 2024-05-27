@@ -202,12 +202,13 @@ mod test {
   use super::*;
 
   #[test]
-  fn strips_bom() {
+  fn handles_bom() {
     let input = "\u{FEFF}{}";
     let config = crate::configuration::Configuration::default();
     let result = format_text(std::path::Path::new("test.json"), input, &config)
       .unwrap()
       .unwrap();
-    assert_eq!(result, "{}\n");
+    // biome chooses to keep the bom so respect that
+    assert_eq!(result, "\u{FEFF}{}\n");
   }
 }
