@@ -196,3 +196,18 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
 
   Ok(options)
 }
+
+#[cfg(test)]
+mod test {
+  user super::*;
+
+  #[test]
+  fn strips_bom() {
+    let input = "\u{FEFF}{}";
+    let config = crate::configuration::ConfigurationBuilder::new().build();
+    let result = format_text(std::path::Path::new("test.json"), input, &config)
+      .unwrap()
+      .unwrap();
+    assert_eq!(result, "{}\n");
+  }
+}
