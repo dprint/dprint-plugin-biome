@@ -196,3 +196,19 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
 
   Ok(options)
 }
+
+#[cfg(test)]
+mod test {
+  use super::*;
+
+  #[test]
+  fn handles_bom() {
+    let input = "\u{FEFF}{}";
+    let config = crate::configuration::Configuration::default();
+    let result = format_text(std::path::Path::new("test.json"), input, &config)
+      .unwrap()
+      .unwrap();
+    // biome chooses to keep the bom so respect that
+    assert_eq!(result, "\u{FEFF}{}\n");
+  }
+}
