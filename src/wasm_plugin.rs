@@ -1,6 +1,9 @@
-use super::configuration::{resolve_config, Configuration};
+use super::configuration::resolve_config;
+use super::configuration::Configuration;
 
-use dprint_core::configuration::{ConfigKeyMap, GlobalConfiguration, ResolveConfigurationResult};
+use dprint_core::configuration::ConfigKeyMap;
+use dprint_core::configuration::GlobalConfiguration;
+use dprint_core::configuration::ResolveConfigurationResult;
 use dprint_core::generate_plugin_code;
 use dprint_core::plugins::FileMatchingInfo;
 use dprint_core::plugins::FormatResult;
@@ -36,6 +39,7 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
       },
       file_matching: FileMatchingInfo {
         file_extensions: vec![
+          "css".to_string(),
           "ts".to_string(),
           "tsx".to_string(),
           "cts".to_string(),

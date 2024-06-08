@@ -1,0 +1,17 @@
+-- file.css --
+~~ css.enabled: true ~~
+== test css ==
+p {
+	margin:    0;
+}
+
+[expect]
+p {
+	margin: 0;
+}
+
+== should format empty ==
+
+  
+
+[expect]

@@ -1,15 +1,17 @@
 use anyhow::bail;
 use anyhow::Result;
+use biome_css_formatter::context::CssFormatOptions;
+use biome_css_parser::CssParserOptions;
+use biome_css_syntax::CssFileSource;
 use biome_formatter::IndentStyle;
 use biome_formatter::LineEnding;
 use biome_formatter::LineWidth;
 use biome_formatter::QuoteStyle;
-use biome_js_formatter::context::trailing_comma::TrailingComma;
 use biome_js_formatter::context::ArrowParentheses;
 use biome_js_formatter::context::JsFormatOptions;
 use biome_js_formatter::context::QuoteProperties;
 use biome_js_formatter::context::Semicolons;
-use biome_js_parser::parse;
+use biome_js_formatter::context::TrailingCommas;
 use biome_js_parser::JsParserOptions;
 use biome_js_syntax::JsFileSource;
 use biome_json_formatter::context::JsonFormatOptions;
@@ -58,7 +60,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       };
 
       let options = build_js_options(config, syntax)?;
-      let tree = parse(
+      let tree = biome_js_parser::parse(
         input_text,
         syntax,
         JsParserOptions {
@@ -69,6 +71,29 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
       }
       let formatted = biome_js_formatter::format_node(options, &tree.syntax())?;
+      formatted.print()?.into_code()
+    }
+    Some("css") => {
+      if config.css_enabled != Some(true) {
+        return Ok(None);
+      }
+
+      let Ok(syntax) = CssFileSource::try_from(file_path) else {
+        return Ok(None);
+      };
+
+      let options = build_css_options(config, syntax)?;
+      let tree = biome_css_parser::parse_css(
+        input_text,
+        CssParserOptions {
+          allow_wrong_line_comments: true,
+          css_modules: true,
+        },
+      );
+      if tree.has_errors() {
+        bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
+      }
+      let formatted = biome_css_formatter::format_node(options, &tree.syntax())?;
       formatted.print()?.into_code()
     }
     _ => return Ok(None),
@@ -101,7 +126,7 @@ fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
       crate::configuration::IndentStyle::Space => IndentStyle::Space,
     });
   }
-  if let Some(value) = config.json_indent_size {
+  if let Some(value) = config.json_indent_width {
     options = options.with_indent_width(value.into());
   }
   if let Some(line_ending) = config.line_ending {
@@ -115,6 +140,31 @@ fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
     options = options.with_line_width(
       LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
     );
+  }
+  Ok(options)
+}
+
+fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<CssFormatOptions> {
+  let mut options = CssFormatOptions::new(syntax);
+  if let Some(indent_style) = config.css_indent_style {
+    options = options.with_indent_style(match indent_style {
+      crate::configuration::IndentStyle::Tab => IndentStyle::Tab,
+      crate::configuration::IndentStyle::Space => IndentStyle::Space,
+    });
+  }
+  if let Some(value) = config.css_indent_width {
+    options = options.with_indent_width(value.into());
+  }
+  if let Some(line_width) = config.css_line_width {
+    options = options.with_line_width(
+      LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
+    );
+  }
+  if let Some(quote_style) = &config.css_quote_style {
+    options = options.with_quote_style(match quote_style {
+      crate::configuration::QuoteStyle::Single => QuoteStyle::Single,
+      crate::configuration::QuoteStyle::Double => QuoteStyle::Double,
+    })
   }
   Ok(options)
 }
@@ -134,7 +184,7 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
       crate::configuration::IndentStyle::Space => IndentStyle::Space,
     });
   }
-  if let Some(indent_width) = config.javascript_indent_size {
+  if let Some(indent_width) = config.javascript_indent_width {
     options = options.with_indent_width(indent_width.into());
   }
   if let Some(line_width) = config.javascript_line_width {
@@ -150,7 +200,7 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
     })
   }
 
-  if let Some(quote_style) = &config.quote_style {
+  if let Some(quote_style) = &config.javascript_quote_style {
     options = options.with_quote_style(match quote_style {
       crate::configuration::QuoteStyle::Single => QuoteStyle::Single,
       crate::configuration::QuoteStyle::Double => QuoteStyle::Double,
@@ -178,11 +228,11 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
     })
   }
 
-  if let Some(trailing_comma) = &config.trailing_comma {
-    options = options.with_trailing_comma(match trailing_comma {
-      crate::configuration::TrailingComma::All => TrailingComma::All,
-      crate::configuration::TrailingComma::Es5 => TrailingComma::Es5,
-      crate::configuration::TrailingComma::None => TrailingComma::None,
+  if let Some(trailing_commas) = &config.trailing_commas {
+    options = options.with_trailing_commas(match trailing_commas {
+      crate::configuration::TrailingComma::All => TrailingCommas::All,
+      crate::configuration::TrailingComma::Es5 => TrailingCommas::Es5,
+      crate::configuration::TrailingComma::None => TrailingCommas::None,
     })
   }
 

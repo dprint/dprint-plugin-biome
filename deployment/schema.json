@@ -3,7 +3,7 @@
   "$id": "https://plugins.dprint.dev/dprint/dprint-plugin-biome/0.0.0/schema.json",
   "type": "object",
   "definitions": {
-    "indentSize": {
+    "indentWidth": {
       "description": "The number of characters for an indent.",
       "default": 2,
       "type": "number"
@@ -54,8 +54,8 @@
         "description": "Carriage return."
       }]
     },
-    "indentSize": {
-      "$ref": "#/definitions/indentSize"
+    "indentWidth": {
+      "$ref": "#/definitions/indentWidth"
     },
     "indentStyle": {
       "$ref": "#/definitions/indentStyle"
@@ -75,14 +75,34 @@
     "lineWidth": {
       "$ref": "#/definitions/lineWidth"
     },
+    "css.enabled": {
+      "description": "Enable css formatting.",
+      "default": false,
+      "type": "boolean"
+    },
+    "css.indentWidth": {
+      "$ref": "#/definitions/indentWidth"
+    },
+    "css.lineWidth": {
+      "$ref": "#/definitions/lineWidth"
+    },
+    "css.quoteStyle": {
+      "$ref": "#/definitions/quoteStyle"
+    },
+    "css.indentStyle": {
+      "$ref": "#/definitions/indentStyle"
+    },
     "javascript.indentStyle": {
       "$ref": "#/definitions/indentStyle"
     },
     "javascript.lineWidth": {
       "$ref": "#/definitions/lineWidth"
     },
-    "javascript.indentSize": {
-      "$ref": "#/definitions/indentSize"
+    "javascript.indentWidth": {
+      "$ref": "#/definitions/indentWidth"
+    },
+    "javascript.quoteStyle": {
+      "$ref": "#/definitions/quoteStyle"
     },
     "json.indentStyle": {
       "$ref": "#/definitions/indentStyle"
@@ -90,8 +110,8 @@
     "json.lineWidth": {
       "$ref": "#/definitions/lineWidth"
     },
-    "json.indentSize": {
-      "$ref": "#/definitions/indentSize"
+    "json.indentWidth": {
+      "$ref": "#/definitions/indentWidth"
     },
     "quoteStyle": {
       "$ref": "#/definitions/quoteStyle"
@@ -99,7 +119,7 @@
     "jsxQuoteStyle": {
       "$ref": "#/definitions/quoteStyle"
     },
-    "trailingComma": {
+    "trailingCommas": {
       "description": "Print trailing commas wherever possible in multi-line comma-separated syntactic structures.",
       "type": "string",
       "default": "all",
