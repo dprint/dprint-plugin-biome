@@ -18,6 +18,7 @@ use biome_json_formatter::context::JsonFormatOptions;
 use biome_json_parser::parse_json;
 use biome_json_parser::JsonParserOptions;
 use biome_json_parser::ParseDiagnostic;
+use serde::de::value;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -127,7 +128,9 @@ fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
     });
   }
   if let Some(value) = config.json_indent_width {
-    options = options.with_indent_width(value.into());
+    if let Ok(value) = value.try_into() {
+      options = options.with_indent_width(value);
+    }
   }
   if let Some(line_ending) = config.line_ending {
     options = options.with_line_ending(match line_ending {
@@ -153,7 +156,9 @@ fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<Cs
     });
   }
   if let Some(value) = config.css_indent_width {
-    options = options.with_indent_width(value.into());
+    if let Ok(value) = value.try_into() {
+      options = options.with_indent_width(value);
+    }
   }
   if let Some(line_width) = config.css_line_width {
     options = options.with_line_width(
@@ -184,8 +189,10 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
       crate::configuration::IndentStyle::Space => IndentStyle::Space,
     });
   }
-  if let Some(indent_width) = config.javascript_indent_width {
-    options = options.with_indent_width(indent_width.into());
+  if let Some(value) = config.javascript_indent_width {
+    if let Ok(value) = value.try_into() {
+      options = options.with_indent_width(value);
+    }
   }
   if let Some(line_width) = config.javascript_line_width {
     options = options.with_line_width(
