@@ -36,12 +36,16 @@ pub fn resolve_config(
       false => IndentStyle::Space,
     },
   ));
-  let indent_size = get_nullable_value(&mut config, "indentSize", &mut diagnostics).or(global_config.indent_width);
+  let indent_width = get_nullable_value(&mut config, "indentWidth", &mut diagnostics)
+    .or_else(|| get_nullable_value(&mut config, "indentSize", &mut diagnostics))
+    .or(global_config.indent_width);
   let line_width = get_nullable_value(&mut config, "lineWidth", &mut diagnostics).or(
     global_config
       .line_width
       .map(|l| std::cmp::min(u16::MAX as u32, l) as u16),
   );
+  let quote_style = get_nullable_value(&mut config, "quoteStyle", &mut diagnostics);
+  let jsx_quote_style = get_nullable_value(&mut config, "jsxQuoteStyle", &mut diagnostics);
 
   let resolved_config = Configuration {
     line_ending: get_nullable_value(&mut config, "lineEnding", &mut diagnostics).or(
@@ -51,19 +55,29 @@ pub fn resolve_config(
         _ => None,
       },
     ),
+    css_enabled: get_nullable_value(&mut config, "css.enabled", &mut diagnostics),
+    css_indent_width: get_nullable_value(&mut config, "css.indentWidth", &mut diagnostics).or(indent_width),
+    css_line_width: get_nullable_value(&mut config, "css.lineWidth", &mut diagnostics).or(line_width),
+    css_quote_style: get_nullable_value(&mut config, "css.quoteStyle", &mut diagnostics).or(quote_style),
+    css_indent_style: get_nullable_value(&mut config, "css.indentStyle", &mut diagnostics).or(indent_style),
     javascript_indent_style: get_nullable_value(&mut config, "javascript.indentStyle", &mut diagnostics)
       .or(indent_style),
-    javascript_indent_size: get_nullable_value(&mut config, "javascript.indentSize", &mut diagnostics).or(indent_size),
+    javascript_indent_width: get_nullable_value(&mut config, "javascript.indentWidth", &mut diagnostics)
+      .or_else(|| get_nullable_value(&mut config, "javascript.indentSize", &mut diagnostics))
+      .or(indent_width),
     javascript_line_width: get_nullable_value(&mut config, "javascript.lineWidth", &mut diagnostics).or(line_width),
+    javascript_quote_style: get_nullable_value(&mut config, "javascript.quoteStyle", &mut diagnostics).or(quote_style),
     json_indent_style: get_nullable_value(&mut config, "json.indentStyle", &mut diagnostics).or(indent_style),
-    json_indent_size: get_nullable_value(&mut config, "json.indentSize", &mut diagnostics).or(indent_size),
+    json_indent_width: get_nullable_value(&mut config, "json.indentWidth", &mut diagnostics)
+      .or_else(|| get_nullable_value(&mut config, "json.indentSize", &mut diagnostics))
+      .or(indent_width),
     json_line_width: get_nullable_value(&mut config, "json.lineWidth", &mut diagnostics).or(line_width),
-    quote_style: get_nullable_value(&mut config, "quoteStyle", &mut diagnostics),
-    jsx_quote_style: get_nullable_value(&mut config, "jsxQuoteStyle", &mut diagnostics),
     quote_properties: get_nullable_value(&mut config, "quoteProperties", &mut diagnostics),
     semicolons: get_nullable_value(&mut config, "semicolons", &mut diagnostics),
     arrow_parentheses: get_nullable_value(&mut config, "arrowParentheses", &mut diagnostics),
-    trailing_comma: get_nullable_value(&mut config, "trailingComma", &mut diagnostics),
+    jsx_quote_style,
+    trailing_commas: get_nullable_value(&mut config, "trailingCommas", &mut diagnostics)
+      .or_else(|| get_nullable_value(&mut config, "trailingComma", &mut diagnostics)),
     bracket_same_line: get_nullable_value(&mut config, "bracketSameLine", &mut diagnostics),
     bracket_spacing: get_nullable_value(&mut config, "bracketSpacing", &mut diagnostics),
   };

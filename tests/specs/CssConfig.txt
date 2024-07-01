@@ -1,0 +1,14 @@
+-- file.css --
+~~ css.enabled: true, css.indentStyle: space, css.indentWidth: 8, css.lineWidth: 10 ~~
+== test css ==
+p {
+  margin: 10px 20px 10px    20px;
+}
+
+[expect]
+p {
+        margin: 10px
+                20px
+                10px
+                20px;
+}
