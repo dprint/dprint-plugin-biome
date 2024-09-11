@@ -55,7 +55,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       let printed = formatted.print()?;
       printed.into_code()
     }
-    Some("js" | "jsx" | "ts" | "tsx" | "cjs" | "mjs" | "cts" | "mts") => {
+    Some("js" | "jsx" | "ts" | "tsx" | "cjs" | "mjs" | "cts" | "mts" | "astro" | "svelte" | "vue") => {
       let Ok(syntax) = JsFileSource::try_from(file_path) else {
         return Ok(None);
       };
