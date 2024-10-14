@@ -18,7 +18,6 @@ use biome_json_formatter::context::JsonFormatOptions;
 use biome_json_parser::parse_json;
 use biome_json_parser::JsonParserOptions;
 use biome_json_parser::ParseDiagnostic;
-use serde::de::value;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -66,6 +65,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         syntax,
         JsParserOptions {
           parse_class_parameter_decorators: true,
+          grit_metavariables: false,
         },
       );
       if tree.has_errors() {
@@ -89,6 +89,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         CssParserOptions {
           allow_wrong_line_comments: true,
           css_modules: true,
+          grit_metavariables: false,
         },
       );
       if tree.has_errors() {
