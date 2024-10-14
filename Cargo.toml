@@ -30,6 +30,9 @@ biome_css_parser = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3
 biome_css_syntax = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
 biome_diagnostics = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
 biome_formatter = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
+biome_graphql_formatter = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
+biome_graphql_parser = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
+biome_graphql_syntax = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
 biome_js_formatter = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
 biome_js_parser = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
 biome_js_syntax = { git = "https://github.com/biomejs/biome", tag = "cli/v1.9.3" }
