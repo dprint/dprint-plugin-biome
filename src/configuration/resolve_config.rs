@@ -46,6 +46,7 @@ pub fn resolve_config(
   );
   let quote_style = get_nullable_value(&mut config, "quoteStyle", &mut diagnostics);
   let jsx_quote_style = get_nullable_value(&mut config, "jsxQuoteStyle", &mut diagnostics);
+  let bracket_spacing = get_nullable_value(&mut config, "bracketSpacing", &mut diagnostics);
 
   let resolved_config = Configuration {
     line_ending: get_nullable_value(&mut config, "lineEnding", &mut diagnostics).or(
@@ -60,6 +61,13 @@ pub fn resolve_config(
     css_line_width: get_nullable_value(&mut config, "css.lineWidth", &mut diagnostics).or(line_width),
     css_quote_style: get_nullable_value(&mut config, "css.quoteStyle", &mut diagnostics).or(quote_style),
     css_indent_style: get_nullable_value(&mut config, "css.indentStyle", &mut diagnostics).or(indent_style),
+    graphql_enabled: get_nullable_value(&mut config, "graphql.enabled", &mut diagnostics),
+    graphql_indent_width: get_nullable_value(&mut config, "graphql.indentWidth", &mut diagnostics).or(indent_width),
+    graphql_line_width: get_nullable_value(&mut config, "graphql.lineWidth", &mut diagnostics).or(line_width),
+    graphql_quote_style: get_nullable_value(&mut config, "graphql.quoteStyle", &mut diagnostics).or(quote_style),
+    graphql_indent_style: get_nullable_value(&mut config, "graphql.indentStyle", &mut diagnostics).or(indent_style),
+    graphql_bracket_spacing: get_nullable_value(&mut config, "graphql.bracketSpacing", &mut diagnostics)
+      .or(bracket_spacing),
     javascript_indent_style: get_nullable_value(&mut config, "javascript.indentStyle", &mut diagnostics)
       .or(indent_style),
     javascript_indent_width: get_nullable_value(&mut config, "javascript.indentWidth", &mut diagnostics)
@@ -79,7 +87,8 @@ pub fn resolve_config(
     trailing_commas: get_nullable_value(&mut config, "trailingCommas", &mut diagnostics)
       .or_else(|| get_nullable_value(&mut config, "trailingComma", &mut diagnostics)),
     bracket_same_line: get_nullable_value(&mut config, "bracketSameLine", &mut diagnostics),
-    bracket_spacing: get_nullable_value(&mut config, "bracketSpacing", &mut diagnostics),
+    javascript_bracket_spacing: get_nullable_value(&mut config, "javascript.bracketSpacing", &mut diagnostics)
+      .or(bracket_spacing),
   };
 
   diagnostics.extend(get_unknown_property_diagnostics(config));

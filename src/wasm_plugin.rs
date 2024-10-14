@@ -38,6 +38,9 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
     if result.config.css_enabled == Some(true) {
       file_extensions.push("css".to_string());
     }
+    if result.config.graphql_enabled == Some(true) {
+      file_extensions.push("graphql".to_string());
+    }
     PluginResolveConfigurationResult {
       config: result.config,
       diagnostics: result.diagnostics,
