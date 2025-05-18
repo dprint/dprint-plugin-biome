@@ -2,7 +2,7 @@
 name = "dprint-plugin-biome"
 version = "0.7.1"
 authors = ["David Sherret <dsherret@gmail.com>"]
-edition = "2021"
+edition = "2024"
 homepage = "https://github.com/dprint/dprint-plugin-biome"
 keywords = ["formatting", "formatter", "biome"]
 license = "MIT"
