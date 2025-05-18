@@ -81,10 +81,10 @@ function tagToVersion(tag: string) {
 
 async function getGitTags(): Promise<string[]> {
   const client = new Octokit();
-  const response = await client.request("GET /repos/{owner}/{repo}/tags", {
+  const tags = await client.paginate("GET /repos/{owner}/{repo}/tags", {
     owner: "biomejs",
     repo: "biome",
     per_page: 100,
   });
-  return response.data.map((item: { name: string }) => item.name);
+  return tags.map(tag => tag.name);
 }
