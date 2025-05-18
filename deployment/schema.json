@@ -92,6 +92,28 @@
     "css.indentStyle": {
       "$ref": "#/definitions/indentStyle"
     },
+    "graphql.enabled": {
+      "description": "Enable graphql formatting.",
+      "default": false,
+      "type": "boolean"
+    },
+    "graphql.indentWidth": {
+      "$ref": "#/definitions/indentWidth"
+    },
+    "graphql.lineWidth": {
+      "$ref": "#/definitions/lineWidth"
+    },
+    "graphql.quoteStyle": {
+      "$ref": "#/definitions/quoteStyle"
+    },
+    "graphql.indentStyle": {
+      "$ref": "#/definitions/indentStyle"
+    },
+    "graphql.bracketSpacing": {
+      "description": "Surround the inner contents of some braces with spaces.",
+      "default": true,
+      "type": "boolean"
+    },
     "javascript.indentStyle": {
       "$ref": "#/definitions/indentStyle"
     },
@@ -103,6 +125,11 @@
     },
     "javascript.quoteStyle": {
       "$ref": "#/definitions/quoteStyle"
+    },
+    "javascript.bracketSpacing": {
+      "description": "Surround the inner contents of some braces with spaces.",
+      "default": true,
+      "type": "boolean"
     },
     "json.indentStyle": {
       "$ref": "#/definitions/indentStyle"
