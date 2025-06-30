@@ -1,0 +1,6 @@
+-- file.svelte --
+== test svelte ==
+<h1> Welcome! </h1>
+
+[expect]
+<h1>Welcome!</h1>
