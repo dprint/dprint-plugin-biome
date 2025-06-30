@@ -64,7 +64,7 @@ async function getLatestBiomeTag() {
   const tags = await getGitTags();
   $.logLight("Found tags:\n" + tags.map(v => ` * ${v}`).join("\n"));
   const versionWithTag = tags
-    .filter(tag => /^cli\/v[0-9]+\.[0-9]+\.[0-9]+$/.test(tag))
+    .filter(tag => /^@biomejs\/biome@[0-9]+\.[0-9]+\.[0-9]+$/.test(tag))
     .map(tag => ({ tag, version: tagToVersion(tag) }));
   versionWithTag.sort((a, b) => semver.compare(a.version, b.version));
   const latestTag = versionWithTag.at(-1);
@@ -76,7 +76,7 @@ async function getLatestBiomeTag() {
 }
 
 function tagToVersion(tag: string) {
-  return semver.parse(tag.replace(/^cli\/v/, ""));
+  return semver.parse(tag.replace(/^@biomejs\/biome@/, ""));
 }
 
 async function getGitTags(): Promise<string[]> {

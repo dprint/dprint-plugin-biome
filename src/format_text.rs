@@ -20,6 +20,7 @@ use biome_json_formatter::context::JsonFormatOptions;
 use biome_json_parser::parse_json;
 use biome_json_parser::JsonParserOptions;
 use biome_json_parser::ParseDiagnostic;
+use camino::Utf8Path;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -57,6 +58,8 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       printed.into_code()
     }
     Some("js" | "jsx" | "ts" | "tsx" | "cjs" | "mjs" | "cts" | "mts") => {
+      let file_path = file_path.to_string_lossy();
+      let file_path = Utf8Path::new(&file_path);
       let Ok(syntax) = JsFileSource::try_from(file_path) else {
         return Ok(None);
       };
@@ -81,6 +84,8 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         return Ok(None);
       }
 
+      let file_path = file_path.to_string_lossy();
+      let file_path = Utf8Path::new(&file_path);
       let Ok(syntax) = CssFileSource::try_from(file_path) else {
         return Ok(None);
       };
@@ -105,6 +110,8 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         return Ok(None);
       }
 
+      let file_path = file_path.to_string_lossy();
+      let file_path = Utf8Path::new(&file_path);
       let Ok(syntax) = GraphqlFileSource::try_from(file_path) else {
         return Ok(None);
       };
