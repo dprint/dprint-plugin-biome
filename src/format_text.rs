@@ -97,6 +97,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
           allow_wrong_line_comments: true,
           css_modules: true,
           grit_metavariables: false,
+          tailwind_directives: Default::default(),
         },
       );
       if tree.has_errors() {
