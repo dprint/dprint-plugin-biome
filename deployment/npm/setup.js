@@ -3,13 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const args = process.argv.slice(2);
 const wasmPath = path.join(__dirname, "../../target/wasm32-unknown-unknown/release/dprint_plugin_biome.wasm");
-const wasmBytes = fs.readFileSync(wasmPath);
-
-let output = "module.exports.encodedBuffer = \"";
-output += wasmBytes.toString("base64");
-output += "\";\n";
-
-fs.writeFileSync(path.join(__dirname, "buffer.generated.js"), output);
+const targetPath = path.join(__dirname, "plugin.wasm");
+fs.copyFileSync(wasmPath, targetPath);
 
 if (args.length > 0) {
   // update the version based on the first argument

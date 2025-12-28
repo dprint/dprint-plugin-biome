@@ -6,8 +6,8 @@ use std::sync::Arc;
 
 use dprint_core::configuration::*;
 use dprint_development::*;
-use dprint_plugin_biome::configuration::resolve_config;
 use dprint_plugin_biome::configuration::Configuration;
+use dprint_plugin_biome::configuration::resolve_config;
 use dprint_plugin_biome::*;
 use pretty_assertions::assert_eq;
 

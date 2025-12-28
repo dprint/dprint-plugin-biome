@@ -1,5 +1,5 @@
-use anyhow::bail;
 use anyhow::Result;
+use anyhow::bail;
 use biome_css_formatter::context::CssFormatOptions;
 use biome_css_parser::CssParserOptions;
 use biome_css_syntax::CssFileSource;
@@ -17,9 +17,9 @@ use biome_js_formatter::context::TrailingCommas;
 use biome_js_parser::JsParserOptions;
 use biome_js_syntax::JsFileSource;
 use biome_json_formatter::context::JsonFormatOptions;
-use biome_json_parser::parse_json;
 use biome_json_parser::JsonParserOptions;
 use biome_json_parser::ParseDiagnostic;
+use biome_json_parser::parse_json;
 use camino::Utf8Path;
 use std::path::Path;
 use std::str::FromStr;
