@@ -8,7 +8,6 @@
   "excludes": [
     "**/node_modules",
     "**/*-lock.json",
-    "deployment/npm/buffer.generated.js",
     "**/target"
   ],
   "plugins": [
