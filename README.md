@@ -25,11 +25,11 @@ To add configuration, specify a `"biome"` key in your dprint.json:
   "biome": {
     "indentStyle": "space",
     "lineWidth": 100,
-    "indentWidth": 4
+    "indentWidth": 4,
   },
   "plugins": [
     // ...etc...
-  ]
+  ],
 }
 ```
 
