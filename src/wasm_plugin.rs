@@ -1,5 +1,5 @@
-use super::configuration::resolve_config;
 use super::configuration::Configuration;
+use super::configuration::resolve_config;
 
 use dprint_core::configuration::ConfigKeyMap;
 use dprint_core::configuration::GlobalConfiguration;
