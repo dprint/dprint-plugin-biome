@@ -5,7 +5,7 @@
 import { $, CargoToml, semver } from "automation";
 import { Octokit } from "octokit";
 
-const rootDirPath = $.path(import.meta).parentOrThrow().parentOrThrow();
+const rootDirPath = $.path(import.meta.dirname!).parentOrThrow();
 const cargoToml = new CargoToml(rootDirPath.join("Cargo.toml"));
 const cargoTomlVersion = getBiomeCargoTomlTag(cargoToml.text());
 
