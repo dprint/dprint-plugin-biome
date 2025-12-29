@@ -60,17 +60,8 @@ jobs:
       run: |
         cd deployment/npm
         npm install
-        node setup.js ${{ steps.get_tag_version.outputs.TAG_VERSION }}
+        node setup.js
         npm run test
-
-    - name: npm publish
-      if: matrix.config.kind == 'test_release' && startsWith(github.ref, 'refs/tags/')
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: |
-        cd deployment/npm
-        npm publish --access public
-        git reset --hard
 
       # GITHUB RELEASE
     - uses: denoland/setup-deno@v2

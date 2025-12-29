@@ -27,7 +27,7 @@ jobs:
           git config user.email "dprintbot@users.noreply.github.com"
           git config user.name "dprintbot"
           deno run -A ./scripts/update.ts
-  # This is necessary to prevent GH automatically dsiabling this workflow after 60 days.
+  # This is necessary to prevent GH automatically disabling this workflow after 60 days.
   workflow-keepalive:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
