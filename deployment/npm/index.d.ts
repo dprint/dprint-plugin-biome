@@ -1,2 +1,2 @@
-/** Gets a buffer representing the WASM module. */
+/** Gets a buffer representing the Wasm module. */
 export function getBuffer(): ArrayBuffer;
