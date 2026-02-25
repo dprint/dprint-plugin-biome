@@ -97,6 +97,11 @@
       "default": false,
       "type": "boolean"
     },
+    "css.gritMetavariables": {
+      "description": "Enable parsing of GritQL metavariables in CSS. Overrides top-level gritMetavariables.",
+      "default": false,
+      "type": "boolean"
+    },
     "graphql.enabled": {
       "description": "Enable graphql formatting.",
       "default": false,
@@ -134,6 +139,11 @@
     "javascript.bracketSpacing": {
       "description": "Surround the inner contents of some braces with spaces.",
       "default": true,
+      "type": "boolean"
+    },
+    "javascript.gritMetavariables": {
+      "description": "Enable parsing of GritQL metavariables in JavaScript/TypeScript. Overrides top-level gritMetavariables.",
+      "default": false,
       "type": "boolean"
     },
     "json.indentStyle": {
