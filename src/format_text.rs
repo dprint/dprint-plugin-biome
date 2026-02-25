@@ -39,7 +39,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         JsonParserOptions {
           allow_comments: true,
           allow_trailing_commas: true,
-          allow_metavariables: config.allow_metavariables.unwrap_or(false),
+          allow_metavariables: config.grit_metavariables.unwrap_or(false),
         },
       );
       if tree.has_errors() {
@@ -72,7 +72,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         syntax,
         JsParserOptions {
           parse_class_parameter_decorators: true,
-          grit_metavariables: config.allow_metavariables.unwrap_or(false),
+          grit_metavariables: config.grit_metavariables.unwrap_or(false),
         },
       );
       if tree.has_errors() {
@@ -98,8 +98,12 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         syntax,
         CssParserOptions {
           allow_wrong_line_comments: true,
-          css_modules: CssModulesKind::Classic,
-          grit_metavariables: config.allow_metavariables.unwrap_or(false),
+          css_modules: if config.css_css_modules.unwrap_or(false) {
+            CssModulesKind::Classic
+          } else {
+            CssModulesKind::None
+          },
+          grit_metavariables: config.grit_metavariables.unwrap_or(false),
           tailwind_directives: Default::default(),
         },
       );

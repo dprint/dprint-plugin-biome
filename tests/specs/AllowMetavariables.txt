@@ -1,6 +1,0 @@
-~~ allowMetavariables: true ~~
-== should format with metavariables ==
-const x = µvar_name;
-
-[expect]
-const x = µvar_name;

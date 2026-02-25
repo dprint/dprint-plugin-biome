@@ -96,5 +96,6 @@ pub struct Configuration {
   pub trailing_commas: Option<TrailingComma>,
   pub bracket_same_line: Option<bool>,
   pub javascript_bracket_spacing: Option<bool>,
-  pub allow_metavariables: Option<bool>,
+  pub css_css_modules: Option<bool>,
+  pub grit_metavariables: Option<bool>,
 }

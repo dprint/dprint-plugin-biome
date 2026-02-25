@@ -92,6 +92,11 @@
     "css.indentStyle": {
       "$ref": "#/definitions/indentStyle"
     },
+    "css.cssModules": {
+      "description": "Enable CSS modules support (enables :local and :global selectors).",
+      "default": false,
+      "type": "boolean"
+    },
     "graphql.enabled": {
       "description": "Enable graphql formatting.",
       "default": false,
@@ -195,8 +200,8 @@
       "default": true,
       "type": "boolean"
     },
-    "allowMetavariables": {
-      "description": "Whether to allow metavariable syntax in the parsed code.",
+    "gritMetavariables": {
+      "description": "Enable parsing of GritQL metavariables.",
       "default": false,
       "type": "boolean"
     }

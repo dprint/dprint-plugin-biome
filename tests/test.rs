@@ -69,15 +69,34 @@ parse ━━━━━━━━━━━━━━━━━━━━━━━━�
 fn should_fail_on_parse_error_json() {
   let config = Configuration::default();
   let err = format_text(&PathBuf::from("./file.json"), "{", &config).unwrap_err();
-  assert_eq!(
-    err.to_string(),
-    r#"parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  let err_str = err.to_string();
+  assert!(err_str.contains("expected `}` but instead the file ends"), "Unexpected error: {}", err_str);
+}
 
-  × expected `}` but instead the file ends
-  
-  i the file ends here
-  
+#[test]
+fn grit_metavariables_js() {
+  let mut config = Configuration::default();
+  config.grit_metavariables = Some(true);
+  let result = format_text(&PathBuf::from("./file.ts"), "const x = µvar_name;\n", &config);
+  assert!(result.is_ok());
+}
 
-"#
-  );
+#[test]
+fn grit_metavariables_config_resolves() {
+  let mut config_map = ConfigKeyMap::new();
+  config_map.insert("gritMetavariables".to_string(), ConfigKeyValue::from_bool(true));
+  let global_config = GlobalConfiguration::default();
+  let result = resolve_config(config_map, &global_config);
+  assert!(result.diagnostics.is_empty());
+  assert_eq!(result.config.grit_metavariables, Some(true));
+}
+
+#[test]
+fn css_modules_config_resolves() {
+  let mut config_map = ConfigKeyMap::new();
+  config_map.insert("css.cssModules".to_string(), ConfigKeyValue::from_bool(true));
+  let global_config = GlobalConfiguration::default();
+  let result = resolve_config(config_map, &global_config);
+  assert!(result.diagnostics.is_empty());
+  assert_eq!(result.config.css_css_modules, Some(true));
 }

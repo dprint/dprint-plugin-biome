@@ -89,7 +89,8 @@ pub fn resolve_config(
     bracket_same_line: get_nullable_value(&mut config, "bracketSameLine", &mut diagnostics),
     javascript_bracket_spacing: get_nullable_value(&mut config, "javascript.bracketSpacing", &mut diagnostics)
       .or(bracket_spacing),
-    allow_metavariables: get_nullable_value(&mut config, "allowMetavariables", &mut diagnostics),
+    css_css_modules: get_nullable_value(&mut config, "css.cssModules", &mut diagnostics),
+    grit_metavariables: get_nullable_value(&mut config, "gritMetavariables", &mut diagnostics),
   };
 
   diagnostics.extend(get_unknown_property_diagnostics(config));
