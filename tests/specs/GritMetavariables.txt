@@ -1,0 +1,6 @@
+~~ javascript.gritMetavariables: true ~~
+== should format js with metavariables ==
+const   x   =   µvar_name
+
+[expect]
+const x = µvar_name;
