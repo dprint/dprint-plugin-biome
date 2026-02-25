@@ -194,6 +194,11 @@
       "description": "Surround the inner contents of some braces with spaces.",
       "default": true,
       "type": "boolean"
+    },
+    "allowMetavariables": {
+      "description": "Whether to allow metavariable syntax in the parsed code.",
+      "default": false,
+      "type": "boolean"
     }
   }
 }
