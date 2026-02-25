@@ -17,6 +17,8 @@ if (cargoTomlVersion.tag === latestTag.tag) {
 }
 
 $.log("Found new version.");
+$.logStep("Updating rust-toolchain.toml...");
+await updateRustToolchain(latestTag.tag);
 $.logStep("Updating Cargo.toml...");
 const isPatchBump = cargoTomlVersion.version.major === latestTag.version.major
   && cargoTomlVersion.version.minor === latestTag.version.minor;
@@ -77,6 +79,29 @@ async function getLatestBiomeTag() {
 
 function tagToVersion(tag: string) {
   return semver.parse(tag.replace(/^@biomejs\/biome@/, ""));
+}
+
+async function updateRustToolchain(tag: string) {
+  const content = await $.request(
+    `https://raw.githubusercontent.com/biomejs/biome/${tag}/rust-toolchain.toml`,
+  ).text();
+  const match = content.match(/channel\s*=\s*"([^"]+)"/);
+  if (match == null) {
+    throw new Error("Could not find channel in biome's rust-toolchain.toml.");
+  }
+  const biomeRustVersion = match[1];
+  const toolchainPath = rootDirPath.join("rust-toolchain.toml");
+  const localContent = toolchainPath.readTextSync();
+  const localMatch = localContent.match(/channel\s*=\s*"([^"]+)"/);
+  if (localMatch == null) {
+    throw new Error("Could not find channel in local rust-toolchain.toml.");
+  }
+  if (localMatch[1] !== biomeRustVersion) {
+    $.log(`Updating Rust toolchain: ${localMatch[1]} -> ${biomeRustVersion}`);
+    toolchainPath.writeTextSync(localContent.replace(localMatch[0], `channel = "${biomeRustVersion}"`));
+  } else {
+    $.log(`Rust toolchain already at ${biomeRustVersion}.`);
+  }
 }
 
 async function getGitTags(): Promise<string[]> {
