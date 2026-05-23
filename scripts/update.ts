@@ -118,9 +118,12 @@ async function updateRustToolchain(tag: string) {
   if (localMatch == null) {
     throw new Error("Could not find channel in local rust-toolchain.toml.");
   }
+  // rust-toolchain.toml channels may be just "1.84" (no patch); pad to
+  // MAJOR.MINOR.PATCH so @std/semver can parse it.
+  const normalize = (v: string) => /^\d+\.\d+$/.test(v) ? `${v}.0` : v;
   // only bump up; never downgrade. compare as semver so 1.95.0 > 1.91.0.
-  const local = semver.parse(localMatch[1]);
-  const upstream = semver.parse(biomeRustVersion);
+  const local = semver.parse(normalize(localMatch[1]));
+  const upstream = semver.parse(normalize(biomeRustVersion));
   if (semver.greaterThan(upstream, local)) {
     $.log(`Updating Rust toolchain: ${localMatch[1]} -> ${biomeRustVersion}`);
     toolchainPath.writeTextSync(localContent.replace(localMatch[0], `channel = "${biomeRustVersion}"`));
