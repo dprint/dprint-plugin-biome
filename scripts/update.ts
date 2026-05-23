@@ -17,6 +17,9 @@ if (cargoTomlVersion.tag === latestTag.tag) {
 }
 
 $.log("Found new version.");
+$.logStep("Updating rust-toolchain.toml...");
+await updateRustToolchain(latestTag.tag);
+
 $.logStep("Updating Cargo.toml...");
 const isPatchBump = cargoTomlVersion.version.major === latestTag.version.major
   && cargoTomlVersion.version.minor === latestTag.version.minor;
@@ -87,4 +90,41 @@ async function getGitTags(): Promise<string[]> {
     per_page: 100,
   });
   return tags.map(tag => tag.name);
+}
+
+async function updateRustToolchain(tag: string) {
+  // biome's tag (e.g. "@biomejs/biome@2.3.10") contains "/" and "@",
+  // both of which need percent-encoding in the raw.githubusercontent.com URL.
+  const encodedTag = encodeURIComponent(tag);
+  const response = await fetch(
+    `https://raw.githubusercontent.com/biomejs/biome/${encodedTag}/rust-toolchain.toml`,
+  );
+  if (response.status === 404) {
+    $.log(`biome ${tag} does not include a rust-toolchain.toml; leaving local one alone.`);
+    return;
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch biome rust-toolchain.toml for ${tag}: ${response.statusText}`);
+  }
+  const content = await response.text();
+  const match = content.match(/channel\s*=\s*"([^"]+)"/);
+  if (match == null) {
+    throw new Error("Could not find channel in biome's rust-toolchain.toml.");
+  }
+  const biomeRustVersion = match[1];
+  const toolchainPath = rootDirPath.join("rust-toolchain.toml");
+  const localContent = toolchainPath.readTextSync();
+  const localMatch = localContent.match(/channel\s*=\s*"([^"]+)"/);
+  if (localMatch == null) {
+    throw new Error("Could not find channel in local rust-toolchain.toml.");
+  }
+  // only bump up; never downgrade. compare as semver so 1.95.0 > 1.91.0.
+  const local = semver.parse(localMatch[1]);
+  const upstream = semver.parse(biomeRustVersion);
+  if (semver.greaterThan(upstream, local)) {
+    $.log(`Updating Rust toolchain: ${localMatch[1]} -> ${biomeRustVersion}`);
+    toolchainPath.writeTextSync(localContent.replace(localMatch[0], `channel = "${biomeRustVersion}"`));
+  } else {
+    $.log(`Rust toolchain at ${localMatch[1]} already satisfies biome ${tag} (needs >= ${biomeRustVersion}).`);
+  }
 }
