@@ -96,15 +96,13 @@ async function updateRustToolchain(tag: string) {
   // biome's tag (e.g. "@biomejs/biome@2.3.10") contains "/" and "@",
   // both of which need percent-encoding in the raw.githubusercontent.com URL.
   const encodedTag = encodeURIComponent(tag);
-  const response = await fetch(
+  // .noThrow() so we can branch on 404 instead of throwing.
+  const response = await $.request(
     `https://raw.githubusercontent.com/biomejs/biome/${encodedTag}/rust-toolchain.toml`,
-  );
+  ).noThrow();
   if (response.status === 404) {
     $.log(`biome ${tag} does not include a rust-toolchain.toml; leaving local one alone.`);
     return;
-  }
-  if (!response.ok) {
-    throw new Error(`Failed to fetch biome rust-toolchain.toml for ${tag}: ${response.statusText}`);
   }
   const content = await response.text();
   const match = content.match(/channel\s*=\s*"([^"]+)"/);
