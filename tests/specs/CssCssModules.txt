@@ -1,0 +1,11 @@
+-- file.css --
+~~ css.enabled: true, css.cssModules: true ~~
+== should format css with modules ==
+:local(.className) {
+  color:    red;
+}
+
+[expect]
+:local(.className) {
+	color: red;
+}

@@ -19,7 +19,6 @@ if (cargoTomlVersion.tag === latestTag.tag) {
 $.log("Found new version.");
 $.logStep("Updating rust-toolchain.toml...");
 await updateRustToolchain(latestTag.tag);
-
 $.logStep("Updating Cargo.toml...");
 const isPatchBump = cargoTomlVersion.version.major === latestTag.version.major
   && cargoTomlVersion.version.minor === latestTag.version.minor;
@@ -82,29 +81,10 @@ function tagToVersion(tag: string) {
   return semver.parse(tag.replace(/^@biomejs\/biome@/, ""));
 }
 
-async function getGitTags(): Promise<string[]> {
-  const client = new Octokit();
-  const tags = await client.paginate("GET /repos/{owner}/{repo}/tags", {
-    owner: "biomejs",
-    repo: "biome",
-    per_page: 100,
-  });
-  return tags.map(tag => tag.name);
-}
-
 async function updateRustToolchain(tag: string) {
-  // biome's tag (e.g. "@biomejs/biome@2.3.10") contains "/" and "@",
-  // both of which need percent-encoding in the raw.githubusercontent.com URL.
-  const encodedTag = encodeURIComponent(tag);
-  // .noThrow() so we can branch on 404 instead of throwing.
-  const response = await $.request(
-    `https://raw.githubusercontent.com/biomejs/biome/${encodedTag}/rust-toolchain.toml`,
-  ).noThrow();
-  if (response.status === 404) {
-    $.log(`biome ${tag} does not include a rust-toolchain.toml; leaving local one alone.`);
-    return;
-  }
-  const content = await response.text();
+  const content = await $.request(
+    `https://raw.githubusercontent.com/biomejs/biome/${tag}/rust-toolchain.toml`,
+  ).text();
   const match = content.match(/channel\s*=\s*"([^"]+)"/);
   if (match == null) {
     throw new Error("Could not find channel in biome's rust-toolchain.toml.");
@@ -116,16 +96,21 @@ async function updateRustToolchain(tag: string) {
   if (localMatch == null) {
     throw new Error("Could not find channel in local rust-toolchain.toml.");
   }
-  // rust-toolchain.toml channels may be just "1.84" (no patch); pad to
-  // MAJOR.MINOR.PATCH so @std/semver can parse it.
-  const normalize = (v: string) => /^\d+\.\d+$/.test(v) ? `${v}.0` : v;
-  // only bump up; never downgrade. compare as semver so 1.95.0 > 1.91.0.
-  const local = semver.parse(normalize(localMatch[1]));
-  const upstream = semver.parse(normalize(biomeRustVersion));
-  if (semver.greaterThan(upstream, local)) {
+  if (localMatch[1] !== biomeRustVersion) {
     $.log(`Updating Rust toolchain: ${localMatch[1]} -> ${biomeRustVersion}`);
     toolchainPath.writeTextSync(localContent.replace(localMatch[0], `channel = "${biomeRustVersion}"`));
   } else {
-    $.log(`Rust toolchain at ${localMatch[1]} already satisfies biome ${tag} (needs >= ${biomeRustVersion}).`);
+    $.log(`Rust toolchain already at ${biomeRustVersion}.`);
   }
 }
+
+async function getGitTags(): Promise<string[]> {
+  const client = new Octokit();
+  const tags = await client.paginate("GET /repos/{owner}/{repo}/tags", {
+    owner: "biomejs",
+    repo: "biome",
+    per_page: 100,
+  });
+  return tags.map(tag => tag.name);
+}
+

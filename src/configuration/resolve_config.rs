@@ -47,6 +47,7 @@ pub fn resolve_config(
   let quote_style = get_nullable_value(&mut config, "quoteStyle", &mut diagnostics);
   let jsx_quote_style = get_nullable_value(&mut config, "jsxQuoteStyle", &mut diagnostics);
   let bracket_spacing = get_nullable_value(&mut config, "bracketSpacing", &mut diagnostics);
+  let grit_metavariables: Option<bool> = get_nullable_value(&mut config, "gritMetavariables", &mut diagnostics);
 
   let resolved_config = Configuration {
     line_ending: get_nullable_value(&mut config, "lineEnding", &mut diagnostics).or(
@@ -89,6 +90,11 @@ pub fn resolve_config(
     bracket_same_line: get_nullable_value(&mut config, "bracketSameLine", &mut diagnostics),
     javascript_bracket_spacing: get_nullable_value(&mut config, "javascript.bracketSpacing", &mut diagnostics)
       .or(bracket_spacing),
+    css_css_modules: get_nullable_value(&mut config, "css.cssModules", &mut diagnostics),
+    css_grit_metavariables: get_nullable_value(&mut config, "css.gritMetavariables", &mut diagnostics)
+      .or(grit_metavariables),
+    javascript_grit_metavariables: get_nullable_value(&mut config, "javascript.gritMetavariables", &mut diagnostics)
+      .or(grit_metavariables),
   };
 
   diagnostics.extend(get_unknown_property_diagnostics(config));

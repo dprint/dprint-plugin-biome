@@ -1,6 +1,7 @@
 use anyhow::Result;
 use anyhow::bail;
 use biome_css_formatter::context::CssFormatOptions;
+use biome_css_parser::CssModulesKind;
 use biome_css_parser::CssParserOptions;
 use biome_css_syntax::CssFileSource;
 use biome_formatter::IndentStyle;
@@ -38,6 +39,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         JsonParserOptions {
           allow_comments: true,
           allow_trailing_commas: true,
+          allow_metavariables: config.javascript_grit_metavariables.unwrap_or(false),
         },
       );
       if tree.has_errors() {
@@ -70,13 +72,13 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         syntax,
         JsParserOptions {
           parse_class_parameter_decorators: true,
-          grit_metavariables: false,
+          grit_metavariables: config.javascript_grit_metavariables.unwrap_or(false),
         },
       );
       if tree.has_errors() {
         bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
       }
-      let formatted = biome_js_formatter::format_node(options, &tree.syntax())?;
+      let formatted = biome_js_formatter::format_node(options, &tree.syntax(), false)?;
       formatted.print()?.into_code()
     }
     Some("css") => {
@@ -93,10 +95,15 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       let options = build_css_options(config, syntax)?;
       let tree = biome_css_parser::parse_css(
         input_text,
+        syntax,
         CssParserOptions {
           allow_wrong_line_comments: true,
-          css_modules: true,
-          grit_metavariables: false,
+          css_modules: if config.css_css_modules.unwrap_or(false) {
+            CssModulesKind::Classic
+          } else {
+            CssModulesKind::None
+          },
+          grit_metavariables: config.css_grit_metavariables.unwrap_or(false),
           tailwind_directives: Default::default(),
         },
       );
