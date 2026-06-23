@@ -11,7 +11,9 @@ Adapter for [Biome](https://github.com/biomejs/biome) for use as a formatting pl
 Then in your project's directory with a dprint.json file, run:
 
 ```shellsession
-dprint config add biome
+dprint add biome
+# or install from npm
+dprint add npm:@dprint/biome
 ```
 
 Note: You do not need Biome installed globally as dprint will run Biome from the .wasm file in a sandboxed environment.
