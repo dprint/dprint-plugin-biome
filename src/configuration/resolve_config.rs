@@ -95,6 +95,7 @@ pub fn resolve_config(
       .or(grit_metavariables),
     javascript_grit_metavariables: get_nullable_value(&mut config, "javascript.gritMetavariables", &mut diagnostics)
       .or(grit_metavariables),
+    css_tailwind_directives: get_nullable_value(&mut config, "css.tailwindDirectives", &mut diagnostics),
   };
 
   diagnostics.extend(get_unknown_property_diagnostics(config));

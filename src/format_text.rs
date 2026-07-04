@@ -104,7 +104,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
             CssModulesKind::None
           },
           grit_metavariables: config.css_grit_metavariables.unwrap_or(false),
-          tailwind_directives: Default::default(),
+          tailwind_directives: config.css_tailwind_directives.unwrap_or(false),
         },
       );
       if tree.has_errors() {

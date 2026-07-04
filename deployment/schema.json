@@ -102,6 +102,11 @@
       "default": false,
       "type": "boolean"
     },
+    "css.tailwindDirectives": {
+      "description": "Enable parsing of Tailwind CSS 4.0 directives and functions.",
+      "default": false,
+      "type": "boolean"
+    },
     "graphql.enabled": {
       "description": "Enable graphql formatting.",
       "default": false,
