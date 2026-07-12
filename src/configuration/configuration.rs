@@ -99,4 +99,5 @@ pub struct Configuration {
   pub css_css_modules: Option<bool>,
   pub css_grit_metavariables: Option<bool>,
   pub javascript_grit_metavariables: Option<bool>,
+  pub css_tailwind_directives: Option<bool>,
 }
