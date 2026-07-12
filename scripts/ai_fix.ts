@@ -113,7 +113,7 @@ function buildFixPrompt(options: AiFixOptions): string {
     ``,
     `Rules:`,
     `1. If an option was RENAMED or REMOVED in biome's \`*FormatOptions\`, update the mapping in \`src/format_text.rs\` (and remove/rename the corresponding plugin config in the other files if it no longer exists upstream).`,
-    `2. If an option was ADDED in biome's \`*FormatOptions\`, expose it as a new plugin config option across ALL of: \`configuration.rs\`, \`resolve_config.rs\`, \`format_text.rs\`, and \`deployment/schema.json\`. Match the existing naming conventions (Rust snake_case fields, camelCase dprint keys with the existing language prefixes).`,
+    `2. If an option was ADDED in biome's \`*FormatOptions\`, expose it as a new plugin config option across ALL of: \`configuration.rs\`, \`resolve_config.rs\`, \`format_text.rs\`, and \`deployment/schema.json\`, AND add a spec test under \`tests/specs/\` that exercises it. Match the existing naming conventions (Rust snake_case fields, camelCase dprint keys with the existing language prefixes).`,
     `3. Do NOT edit \`README.md\`. Its config documentation is maintained separately, so leave it untouched.`,
     `4. Preserve the existing code style. Keep non-test code above test modules. New comments start lowercase unless multiple sentences.`,
     `5. When done, ALL of these must pass (CI denies clippy warnings, and the wasm build is what actually ships) — iterate until they are all clean:`,
@@ -121,6 +121,8 @@ function buildFixPrompt(options: AiFixOptions): string {
     `     cargo clippy --all-targets --all-features -- -D warnings`,
     `     cargo build --target wasm32-unknown-unknown --features wasm --release`,
     `6. Do not change the plugin's own version in Cargo.toml, do not run git commit, and do not push.`,
+    ``,
+    `Spec test format: each file in \`tests/specs/\` has a \`~~ optionKey: value ~~\` config header line, then \`== short description ==\`, the input code, a line containing \`[expect]\`, and the expected formatted output. Add or update specs for options you add or rename (follow the existing files as examples and the \`Config<Name>.txt\` naming), delete the spec for any removed option, and run \`cargo test\` to confirm they pass.`,
   ].join("\n");
 }
 
@@ -144,6 +146,7 @@ function describeWiring(): string {
     `- \`src/configuration/configuration.rs\` -> the plugin's own \`Configuration\` struct and enums.`,
     `- \`src/configuration/resolve_config.rs\` -> reads each dprint config key into \`Configuration\`.`,
     `- \`deployment/schema.json\` -> the JSON schema of config options shown to users.`,
+    `- \`tests/specs/*.txt\` -> spec tests (run by \`dprint_development::run_specs\` via \`tests/test.rs\`) that exercise each config option.`,
   ].join("\n");
 }
 
@@ -222,6 +225,7 @@ function buildReviewPrompt(options: AiFixOptions): string {
     `Verify specifically:`,
     `- Every \`with_*\` option set in the \`build_*_options\` functions still exists in biome's \`*FormatOptions\` with that exact name (catch removed/renamed options).`,
     `- Any formatter option newly added upstream is exposed through ALL layers: configuration.rs, resolve_config.rs, format_text.rs, and deployment/schema.json. A partial addition is a blocking issue.`,
+    `- Every config option added or renamed in this change has a spec test under \`tests/specs/\` exercising it (and any removed option's spec is deleted). A missing spec test is a blocking issue.`,
     `- Naming conventions are consistent (Rust snake_case fields, camelCase dprint keys with the existing language prefixes, matching the schema).`,
     `- README.md was NOT modified (its documentation is maintained separately); flag any README.md change as a blocking issue.`,
     `- No obvious correctness bugs, and code style matches the surrounding code.`,
