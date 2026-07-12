@@ -31,7 +31,7 @@ fn test_specs() {
         let config_result = resolve_config(spec_config, &global_config);
         ensure_no_diagnostics(&config_result.diagnostics);
 
-        format_text(file_path, &file_text, &config_result.config)
+        format_text(file_path, file_text, &config_result.config)
       })
     },
     Arc::new(move |_file_path, _file_text, _spec_config| panic!("Plugin does not support dprint-core tracing.")),
@@ -70,13 +70,19 @@ fn should_fail_on_parse_error_json() {
   let config = Configuration::default();
   let err = format_text(&PathBuf::from("./file.json"), "{", &config).unwrap_err();
   let err_str = err.to_string();
-  assert!(err_str.contains("expected `}` but instead the file ends"), "Unexpected error: {}", err_str);
+  assert!(
+    err_str.contains("expected `}` but instead the file ends"),
+    "Unexpected error: {}",
+    err_str
+  );
 }
 
 #[test]
 fn grit_metavariables_js() {
-  let mut config = Configuration::default();
-  config.javascript_grit_metavariables = Some(true);
+  let config = Configuration {
+    javascript_grit_metavariables: Some(true),
+    ..Default::default()
+  };
   let result = format_text(&PathBuf::from("./file.ts"), "const x = µvar_name;\n", &config);
   assert!(result.is_ok());
 }

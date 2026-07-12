@@ -3,24 +3,23 @@ use anyhow::bail;
 use biome_css_formatter::context::CssFormatOptions;
 use biome_css_parser::CssModulesKind;
 use biome_css_parser::CssParserOptions;
-use biome_css_syntax::CssFileSource;
 use biome_formatter::IndentStyle;
 use biome_formatter::LineEnding;
 use biome_formatter::LineWidth;
 use biome_formatter::QuoteStyle;
 use biome_graphql_formatter::context::GraphqlFormatOptions;
-use biome_graphql_syntax::GraphqlFileSource;
 use biome_js_formatter::context::ArrowParentheses;
 use biome_js_formatter::context::JsFormatOptions;
 use biome_js_formatter::context::QuoteProperties;
 use biome_js_formatter::context::Semicolons;
 use biome_js_formatter::context::TrailingCommas;
 use biome_js_parser::JsParserOptions;
-use biome_js_syntax::JsFileSource;
 use biome_json_formatter::context::JsonFormatOptions;
 use biome_json_parser::JsonParserOptions;
 use biome_json_parser::ParseDiagnostic;
 use biome_json_parser::parse_json;
+use biome_languages::CssFileSource;
+use biome_languages::JsFileSource;
 use camino::Utf8Path;
 use std::path::Path;
 use std::str::FromStr;
@@ -78,7 +77,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       if tree.has_errors() {
         bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
       }
-      let formatted = biome_js_formatter::format_node(options, &tree.syntax(), false)?;
+      let formatted = biome_js_formatter::format_node(options, &tree.syntax(), Vec::new())?;
       formatted.print()?.into_code()
     }
     Some("css") => {
@@ -105,6 +104,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
           },
           grit_metavariables: config.css_grit_metavariables.unwrap_or(false),
           tailwind_directives: config.css_tailwind_directives.unwrap_or(false),
+          ..Default::default()
         },
       );
       if tree.has_errors() {
@@ -118,13 +118,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         return Ok(None);
       }
 
-      let file_path = file_path.to_string_lossy();
-      let file_path = Utf8Path::new(&file_path);
-      let Ok(syntax) = GraphqlFileSource::try_from(file_path) else {
-        return Ok(None);
-      };
-
-      let options = build_graphql_options(config, syntax)?;
+      let options = build_graphql_options(config)?;
       let tree = biome_graphql_parser::parse_graphql(input_text);
       if tree.has_errors() {
         bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
@@ -162,10 +156,10 @@ fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
       crate::configuration::IndentStyle::Space => IndentStyle::Space,
     });
   }
-  if let Some(value) = config.json_indent_width {
-    if let Ok(value) = value.try_into() {
-      options = options.with_indent_width(value);
-    }
+  if let Some(value) = config.json_indent_width
+    && let Ok(value) = value.try_into()
+  {
+    options = options.with_indent_width(value);
   }
   if let Some(line_ending) = config.line_ending {
     options = options.with_line_ending(match line_ending {
@@ -190,10 +184,10 @@ fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<Cs
       crate::configuration::IndentStyle::Space => IndentStyle::Space,
     });
   }
-  if let Some(value) = config.css_indent_width {
-    if let Ok(value) = value.try_into() {
-      options = options.with_indent_width(value);
-    }
+  if let Some(value) = config.css_indent_width
+    && let Ok(value) = value.try_into()
+  {
+    options = options.with_indent_width(value);
   }
   if let Some(line_width) = config.css_line_width {
     options = options.with_line_width(
@@ -209,18 +203,18 @@ fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<Cs
   Ok(options)
 }
 
-fn build_graphql_options(config: &Configuration, syntax: GraphqlFileSource) -> Result<GraphqlFormatOptions> {
-  let mut options = GraphqlFormatOptions::new(syntax);
+fn build_graphql_options(config: &Configuration) -> Result<GraphqlFormatOptions> {
+  let mut options = GraphqlFormatOptions::new();
   if let Some(indent_style) = config.graphql_indent_style {
     options = options.with_indent_style(match indent_style {
       crate::configuration::IndentStyle::Tab => IndentStyle::Tab,
       crate::configuration::IndentStyle::Space => IndentStyle::Space,
     });
   }
-  if let Some(value) = config.graphql_indent_width {
-    if let Ok(value) = value.try_into() {
-      options = options.with_indent_width(value);
-    }
+  if let Some(value) = config.graphql_indent_width
+    && let Ok(value) = value.try_into()
+  {
+    options = options.with_indent_width(value);
   }
   if let Some(line_width) = config.graphql_line_width {
     options = options.with_line_width(
@@ -254,10 +248,10 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
       crate::configuration::IndentStyle::Space => IndentStyle::Space,
     });
   }
-  if let Some(value) = config.javascript_indent_width {
-    if let Ok(value) = value.try_into() {
-      options = options.with_indent_width(value);
-    }
+  if let Some(value) = config.javascript_indent_width
+    && let Ok(value) = value.try_into()
+  {
+    options = options.with_indent_width(value);
   }
   if let Some(line_width) = config.javascript_line_width {
     options = options.with_line_width(
