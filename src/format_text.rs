@@ -1,5 +1,3 @@
-use anyhow::Result;
-use anyhow::bail;
 use biome_css_formatter::context::CssFormatOptions;
 use biome_css_parser::CssModulesKind;
 use biome_css_parser::CssParserOptions;
@@ -26,7 +24,24 @@ use std::str::FromStr;
 
 use crate::configuration::Configuration;
 
-pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -> Result<Option<String>> {
+/// Error that occurs while formatting.
+#[derive(Debug, thiserror::Error)]
+pub enum FormatError {
+  /// The file could not be parsed.
+  #[error("{0}")]
+  Parse(String),
+  /// The provided configuration was not valid.
+  #[error("{0}")]
+  Config(String),
+  /// Biome failed to format the file.
+  #[error(transparent)]
+  Format(#[from] biome_formatter::FormatError),
+  /// Biome failed to print the formatted file.
+  #[error(transparent)]
+  Print(#[from] biome_formatter::PrintError),
+}
+
+pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -> Result<Option<String>, FormatError> {
   let lower_ext = file_path
     .extension()
     .and_then(|ext| ext.to_str())
@@ -50,7 +65,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
             Some(trimmed_text.to_string())
           });
         }
-        bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
+        return Err(FormatError::Parse(get_diagnostics_message(tree.into_diagnostics())));
       }
 
       let options = build_json_options(config)?;
@@ -75,7 +90,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         },
       );
       if tree.has_errors() {
-        bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
+        return Err(FormatError::Parse(get_diagnostics_message(tree.into_diagnostics())));
       }
       let formatted = biome_js_formatter::format_node(options, &tree.syntax(), Vec::new())?;
       formatted.print()?.into_code()
@@ -108,7 +123,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         },
       );
       if tree.has_errors() {
-        bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
+        return Err(FormatError::Parse(get_diagnostics_message(tree.into_diagnostics())));
       }
       let formatted = biome_css_formatter::format_node(options, &tree.syntax())?;
       formatted.print()?.into_code()
@@ -121,7 +136,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       let options = build_graphql_options(config)?;
       let tree = biome_graphql_parser::parse_graphql(input_text);
       if tree.has_errors() {
-        bail!("{}", get_diagnostics_message(tree.into_diagnostics()));
+        return Err(FormatError::Parse(get_diagnostics_message(tree.into_diagnostics())));
       }
       let formatted = biome_graphql_formatter::format_node(options, &tree.syntax())?;
       formatted.print()?.into_code()
@@ -148,7 +163,7 @@ fn get_diagnostics_message(diagnostics: Vec<ParseDiagnostic>) -> String {
   text
 }
 
-fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
+fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions, FormatError> {
   let mut options = JsonFormatOptions::default();
   if let Some(indent_style) = config.json_indent_style {
     options = options.with_indent_style(match indent_style {
@@ -170,13 +185,14 @@ fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions> {
   }
   if let Some(line_width) = config.json_line_width {
     options = options.with_line_width(
-      LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
+      LineWidth::from_str(&line_width.to_string())
+        .map_err(|err| FormatError::Config(format!("{} (Value: {})", err, line_width)))?,
     );
   }
   Ok(options)
 }
 
-fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<CssFormatOptions> {
+fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<CssFormatOptions, FormatError> {
   let mut options = CssFormatOptions::new(syntax);
   if let Some(indent_style) = config.css_indent_style {
     options = options.with_indent_style(match indent_style {
@@ -191,7 +207,8 @@ fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<Cs
   }
   if let Some(line_width) = config.css_line_width {
     options = options.with_line_width(
-      LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
+      LineWidth::from_str(&line_width.to_string())
+        .map_err(|err| FormatError::Config(format!("{} (Value: {})", err, line_width)))?,
     );
   }
   if let Some(quote_style) = &config.css_quote_style {
@@ -203,7 +220,7 @@ fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<Cs
   Ok(options)
 }
 
-fn build_graphql_options(config: &Configuration) -> Result<GraphqlFormatOptions> {
+fn build_graphql_options(config: &Configuration) -> Result<GraphqlFormatOptions, FormatError> {
   let mut options = GraphqlFormatOptions::new();
   if let Some(indent_style) = config.graphql_indent_style {
     options = options.with_indent_style(match indent_style {
@@ -218,7 +235,8 @@ fn build_graphql_options(config: &Configuration) -> Result<GraphqlFormatOptions>
   }
   if let Some(line_width) = config.graphql_line_width {
     options = options.with_line_width(
-      LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
+      LineWidth::from_str(&line_width.to_string())
+        .map_err(|err| FormatError::Config(format!("{} (Value: {})", err, line_width)))?,
     );
   }
   if let Some(quote_style) = &config.graphql_quote_style {
@@ -233,7 +251,7 @@ fn build_graphql_options(config: &Configuration) -> Result<GraphqlFormatOptions>
   Ok(options)
 }
 
-fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFormatOptions> {
+fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFormatOptions, FormatError> {
   let mut options = JsFormatOptions::new(syntax);
   if let Some(line_ending) = config.line_ending {
     options = options.with_line_ending(match line_ending {
@@ -255,7 +273,8 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
   }
   if let Some(line_width) = config.javascript_line_width {
     options = options.with_line_width(
-      LineWidth::from_str(&line_width.to_string()).map_err(|err| anyhow::anyhow!("{} (Value: {})", err, line_width))?,
+      LineWidth::from_str(&line_width.to_string())
+        .map_err(|err| FormatError::Config(format!("{} (Value: {})", err, line_width)))?,
     );
   }
 

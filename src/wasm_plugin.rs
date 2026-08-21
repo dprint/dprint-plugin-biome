@@ -7,6 +7,7 @@ use dprint_core::generate_plugin_code;
 use dprint_core::plugins::CheckConfigUpdatesMessage;
 use dprint_core::plugins::ConfigChange;
 use dprint_core::plugins::FileMatchingInfo;
+use dprint_core::plugins::FormatError;
 use dprint_core::plugins::FormatResult;
 use dprint_core::plugins::PluginInfo;
 use dprint_core::plugins::PluginResolveConfigurationResult;
@@ -51,7 +52,7 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
     }
   }
 
-  fn check_config_updates(&self, _message: CheckConfigUpdatesMessage) -> anyhow::Result<Vec<ConfigChange>> {
+  fn check_config_updates(&self, _message: CheckConfigUpdatesMessage) -> Result<Vec<ConfigChange>, FormatError> {
     Ok(Vec::new())
   }
 
@@ -84,7 +85,7 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
     }
 
     let text = String::from_utf8_lossy(&request.file_bytes);
-    let maybe_text = super::format_text(request.file_path, &text, request.config)?;
+    let maybe_text = super::format_text(request.file_path, &text, request.config).map_err(FormatError::new)?;
     Ok(maybe_text.map(|t| t.into_bytes()))
   }
 }
