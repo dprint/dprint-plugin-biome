@@ -1,4 +1,4 @@
-import { generateChangeLog } from "automation/changelog.ts";
+import { generateChangeLog } from "automation";
 
 const version = Deno.args[0];
 const changelog = await generateChangeLog({
