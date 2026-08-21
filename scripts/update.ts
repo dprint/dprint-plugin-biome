@@ -185,4 +185,3 @@ async function getGitTags(): Promise<string[]> {
   });
   return tags.map(tag => tag.name);
 }
-

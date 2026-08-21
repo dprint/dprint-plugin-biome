@@ -35,7 +35,11 @@ biome_js_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs
 biome_js_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.5.9" }
 biome_json_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.5.9" }
 biome_json_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.5.9" }
-biome_languages = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.5.9", features = ["lang_css", "lang_graphql", "lang_js"] }
+biome_languages = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.5.9", features = [
+  "lang_css",
+  "lang_graphql",
+  "lang_js",
+] }
 camino = "1.1.10"
 dprint-core = { version = "0.67.4", default-features = false }
 serde = { version = "1.0.210", features = ["derive"] }
