@@ -55,8 +55,8 @@ export async function aiFixBiomeUpdate(options: AiFixOptions): Promise<void> {
     if (round > REVIEW_MAX_ROUNDS) {
       const blocking = review.issues.filter((i) => i.severity === "blocking");
       throw new Error(
-        `AI reviewer did not approve after ${REVIEW_MAX_ROUNDS} refix round(s). Blocking issues:\n` +
-          blocking.map((i) => `  - ${i.description}`).join("\n"),
+        `AI reviewer did not approve after ${REVIEW_MAX_ROUNDS} refix round(s). Blocking issues:\n`
+          + blocking.map((i) => `  - ${i.description}`).join("\n"),
       );
     }
     $.logStep(`Reviewer requested changes — Codex refix round ${round}...`);
