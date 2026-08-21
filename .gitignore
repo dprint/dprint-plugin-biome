@@ -1,5 +1,4 @@
 /target
-Cargo.lock
 deployment/npm/plugin.wasm
 deployment/npm/node_modules
 .vscode
