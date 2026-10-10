@@ -27,9 +27,9 @@ const buildJob = job("build", {
       env: {
         OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}",
         // model that fixes/wires up the Biome update (Codex)
-        CODEX_MODEL: "gpt-5.6-terra",
+        CODEX_MODEL: "gpt-6.1-sol",
         // separate model that independently reviews the changes
-        REVIEW_MODEL: "gpt-5.6-sol",
+        REVIEW_MODEL: "gpt-6-astra",
       },
       run: [
         `git config user.email "dprintbot@users.noreply.github.com"`,
