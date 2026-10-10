@@ -183,7 +183,7 @@ interface ReviewIssue {
 async function reviewChanges(options: AiFixOptions): Promise<ReviewResult> {
   // default to a different model than the Codex fixer so the review is a
   // genuinely independent second opinion.
-  const model = Deno.env.get("REVIEW_MODEL") ?? "gpt-5.6-sol";
+  const model = Deno.env.get("REVIEW_MODEL") ?? "gpt-6-astra";
 
   // record intent-to-add so any files Codex created also show in `git diff`.
   await $`git add -N .`.quiet();
