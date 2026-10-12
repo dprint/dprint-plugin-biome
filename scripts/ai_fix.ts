@@ -1,10 +1,10 @@
 /**
  * Reconciles this plugin with a new Biome release using OpenAI Codex, in two
- * stages that each run Codex with a different model:
+ * stages that each run Codex in a session of its own:
  *
  *   1. a Codex agentic session edits the source and runs the checks until they
  *      pass (fixing breakage and/or wiring up new formatter options), then
- *   2. a SEPARATE reviewer model reviews the result with Codex, so it can
+ *   2. a SEPARATE reviewer session reviews the result with Codex, so it can
  *      investigate (read the upstream biome source, grep the repo). It is
  *      instructed to review only and not modify anything. If it finds blocking
  *      issues they are fed back to the stage-1 Codex for another pass, bounded
@@ -15,6 +15,10 @@
  *   - a patch bump that failed the checks (fix the breakage), and
  *   - any minor bump (review for new/renamed/removed options even when it
  *     still compiles).
+ *
+ * Both stages use the default model of the Codex CLI, which is installed at
+ * its latest version when it is missing, so they move to a new model when
+ * Codex does. Set `CODEX_MODEL` or `REVIEW_MODEL` to pin the model of a stage.
  *
  * Codex must NOT commit or push -- `update.ts` captures the working tree
  * changes into the existing Biome bump commit afterwards.
@@ -181,26 +185,21 @@ interface ReviewIssue {
 // prompt instead. (CI is itself a throwaway VM, and the final check gate in
 // update.ts re-verifies whatever ends up in the working tree.)
 async function reviewChanges(options: AiFixOptions): Promise<ReviewResult> {
-  // default to a different model than the Codex fixer so the review is a
-  // genuinely independent second opinion.
-  const model = Deno.env.get("REVIEW_MODEL") ?? "gpt-6-astra";
+  // the reviewer starts without the context of the fixer, which is what makes
+  // it a second opinion. It uses the default model of Codex unless one is set.
+  const model = Deno.env.get("REVIEW_MODEL");
 
   // record intent-to-add so any files Codex created also show in `git diff`.
   await $`git add -N .`.quiet();
 
   const outputFile = await Deno.makeTempFile({ prefix: "codex-review-", suffix: ".json" });
   try {
-    $.logStep(`Reviewing changes with Codex (${model})...`);
-    const args = [
-      "exec",
-      "--skip-git-repo-check",
-      "--dangerously-bypass-approvals-and-sandbox",
-      "--model",
-      model,
-      "--output-last-message",
-      outputFile,
-      buildReviewPrompt(options),
-    ];
+    $.logStep(`Reviewing changes with Codex (${model ?? "default model"})...`);
+    const args = ["exec", "--skip-git-repo-check", "--dangerously-bypass-approvals-and-sandbox"];
+    if (model) {
+      args.push("--model", model);
+    }
+    args.push("--output-last-message", outputFile, buildReviewPrompt(options));
     await $`codex ${args}`;
     return parseReview(await Deno.readTextFile(outputFile));
   } finally {
