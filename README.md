@@ -35,6 +35,33 @@ To add configuration, specify a `"biome"` key in your dprint.json:
 
 For an overview of the config, see https://dprint.dev/plugins/biome/config/
 
+### Enabling and disabling languages
+
+Each language has a `<language>.enabled` option that decides if the plugin formats the files of that language:
+
+```jsonc
+{
+  "biome": {
+    "css.enabled": true,
+    "json.enabled": false,
+    "jsonc.enabled": false,
+  },
+}
+```
+
+| Option               | Files                         | Default |
+| -------------------- | ----------------------------- | ------- |
+| `javascript.enabled` | `.js`, `.jsx`, `.cjs`, `.mjs` | `true`  |
+| `typescript.enabled` | `.ts`, `.tsx`, `.cts`, `.mts` | `true`  |
+| `json.enabled`       | `.json`                       | `true`  |
+| `jsonc.enabled`      | `.jsonc`                      | `true`  |
+| `css.enabled`        | `.css`                        | `false` |
+| `graphql.enabled`    | `.graphql`                    | `false` |
+
+A disabled language's files are no longer matched by this plugin, so dprint formats them with the next plugin that matches them, if any.
+
+The other language options are not split the same way: the `javascript.*` options also apply to TypeScript and the `json.*` options also apply to JSONC.
+
 Note: The plugin does not understand Biome's configuration file because it runs sandboxed in a Wasm runtime—it has no access to the file system in order to read Biome's config.
 
 ## JS Formatting API

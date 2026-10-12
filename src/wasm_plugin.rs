@@ -1,4 +1,5 @@
 use super::configuration::Configuration;
+use super::configuration::Language;
 use super::configuration::resolve_config;
 
 use dprint_core::configuration::ConfigKeyMap;
@@ -24,24 +25,12 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
     global_config: &GlobalConfiguration,
   ) -> PluginResolveConfigurationResult<Configuration> {
     let result = resolve_config(config, global_config);
-    let mut file_extensions = vec![
-      "ts".to_string(),
-      "tsx".to_string(),
-      "cts".to_string(),
-      "mts".to_string(),
-      "js".to_string(),
-      "jsx".to_string(),
-      "cjs".to_string(),
-      "mjs".to_string(),
-      "json".to_string(),
-      "jsonc".to_string(),
-    ];
-    if result.config.css_enabled == Some(true) {
-      file_extensions.push("css".to_string());
-    }
-    if result.config.graphql_enabled == Some(true) {
-      file_extensions.push("graphql".to_string());
-    }
+    let file_extensions = Language::ALL
+      .into_iter()
+      .filter(|language| result.config.is_language_enabled(*language))
+      .flat_map(|language| language.extensions())
+      .map(|ext| ext.to_string())
+      .collect();
     PluginResolveConfigurationResult {
       config: result.config,
       diagnostics: result.diagnostics,

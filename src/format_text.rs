@@ -23,6 +23,7 @@ use std::path::Path;
 use std::str::FromStr;
 
 use crate::configuration::Configuration;
+use crate::configuration::Language;
 
 /// Error that occurs while formatting.
 #[derive(Debug, thiserror::Error)]
@@ -46,8 +47,14 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
     .extension()
     .and_then(|ext| ext.to_str())
     .map(|s| s.to_lowercase());
-  let output = match lower_ext.as_deref() {
-    Some("json" | "jsonc") => {
+  let Some(language) = lower_ext.as_deref().and_then(Language::from_extension) else {
+    return Ok(None);
+  };
+  if !config.is_language_enabled(language) {
+    return Ok(None);
+  }
+  let output = match language {
+    Language::Json | Language::Jsonc => {
       let tree = parse_json(
         input_text,
         JsonParserOptions {
@@ -73,7 +80,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       let printed = formatted.print()?;
       printed.into_code()
     }
-    Some("js" | "jsx" | "ts" | "tsx" | "cjs" | "mjs" | "cts" | "mts") => {
+    Language::JavaScript | Language::TypeScript => {
       let file_path = file_path.to_string_lossy();
       let file_path = Utf8Path::new(&file_path);
       let Ok(syntax) = JsFileSource::try_from(file_path) else {
@@ -95,11 +102,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       let formatted = biome_js_formatter::format_node(options, &tree.syntax(), Vec::new())?;
       formatted.print()?.into_code()
     }
-    Some("css") => {
-      if config.css_enabled != Some(true) {
-        return Ok(None);
-      }
-
+    Language::Css => {
       let file_path = file_path.to_string_lossy();
       let file_path = Utf8Path::new(&file_path);
       let Ok(syntax) = CssFileSource::try_from(file_path) else {
@@ -128,11 +131,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       let formatted = biome_css_formatter::format_node(options, &tree.syntax())?;
       formatted.print()?.into_code()
     }
-    Some("graphql") => {
-      if config.graphql_enabled != Some(true) {
-        return Ok(None);
-      }
-
+    Language::Graphql => {
       let options = build_graphql_options(config)?;
       let tree = biome_graphql_parser::parse_graphql(input_text);
       if tree.has_errors() {
@@ -141,7 +140,6 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       let formatted = biome_graphql_formatter::format_node(options, &tree.syntax())?;
       formatted.print()?.into_code()
     }
-    _ => return Ok(None),
   };
   if output == input_text {
     Ok(None)
