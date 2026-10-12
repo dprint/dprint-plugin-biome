@@ -15,7 +15,7 @@ ${changelog}
 Then in your project's directory with a dprint.json file, run:
 
 \`\`\`shellsession
-dprint config add biome
+dprint add biome
 \`\`\`
 
 ## JS Formatting API
