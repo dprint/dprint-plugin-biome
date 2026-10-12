@@ -82,10 +82,12 @@ pub struct Configuration {
   pub graphql_line_width: Option<u16>,
   pub graphql_quote_style: Option<QuoteStyle>,
   pub graphql_bracket_spacing: Option<bool>,
+  pub javascript_enabled: Option<bool>,
   pub javascript_indent_style: Option<IndentStyle>,
   pub javascript_indent_width: Option<u8>,
   pub javascript_line_width: Option<u16>,
   pub javascript_quote_style: Option<QuoteStyle>,
+  pub json_enabled: Option<bool>,
   pub json_indent_style: Option<IndentStyle>,
   pub json_indent_width: Option<u8>,
   pub json_line_width: Option<u16>,
@@ -100,4 +102,63 @@ pub struct Configuration {
   pub css_grit_metavariables: Option<bool>,
   pub javascript_grit_metavariables: Option<bool>,
   pub css_tailwind_directives: Option<bool>,
+  pub jsonc_enabled: Option<bool>,
+  pub typescript_enabled: Option<bool>,
+}
+
+impl Configuration {
+  /// Gets if the files of the language are formatted, which is decided
+  /// by the language's `<language>.enabled` option.
+  pub fn is_language_enabled(&self, language: Language) -> bool {
+    match language {
+      Language::TypeScript => self.typescript_enabled != Some(false),
+      Language::JavaScript => self.javascript_enabled != Some(false),
+      Language::Json => self.json_enabled != Some(false),
+      Language::Jsonc => self.jsonc_enabled != Some(false),
+      // these are opt-in
+      Language::Css => self.css_enabled == Some(true),
+      Language::Graphql => self.graphql_enabled == Some(true),
+    }
+  }
+}
+
+/// A language that can be turned on or off with its `<language>.enabled` option.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Language {
+  TypeScript,
+  JavaScript,
+  Json,
+  Jsonc,
+  Css,
+  Graphql,
+}
+
+impl Language {
+  pub const ALL: [Language; 6] = [
+    Language::TypeScript,
+    Language::JavaScript,
+    Language::Json,
+    Language::Jsonc,
+    Language::Css,
+    Language::Graphql,
+  ];
+
+  /// Gets the language of a file with the provided lowercase extension.
+  pub fn from_extension(lower_ext: &str) -> Option<Language> {
+    Language::ALL
+      .into_iter()
+      .find(|language| language.extensions().contains(&lower_ext))
+  }
+
+  /// The file extensions of the language's files.
+  pub fn extensions(&self) -> &'static [&'static str] {
+    match self {
+      Language::TypeScript => &["ts", "tsx", "cts", "mts"],
+      Language::JavaScript => &["js", "jsx", "cjs", "mjs"],
+      Language::Json => &["json"],
+      Language::Jsonc => &["jsonc"],
+      Language::Css => &["css"],
+      Language::Graphql => &["graphql"],
+    }
+  }
 }

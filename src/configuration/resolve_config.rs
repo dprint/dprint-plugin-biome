@@ -69,6 +69,7 @@ pub fn resolve_config(
     graphql_indent_style: get_nullable_value(&mut config, "graphql.indentStyle", &mut diagnostics).or(indent_style),
     graphql_bracket_spacing: get_nullable_value(&mut config, "graphql.bracketSpacing", &mut diagnostics)
       .or(bracket_spacing),
+    javascript_enabled: get_nullable_value(&mut config, "javascript.enabled", &mut diagnostics),
     javascript_indent_style: get_nullable_value(&mut config, "javascript.indentStyle", &mut diagnostics)
       .or(indent_style),
     javascript_indent_width: get_nullable_value(&mut config, "javascript.indentWidth", &mut diagnostics)
@@ -76,6 +77,7 @@ pub fn resolve_config(
       .or(indent_width),
     javascript_line_width: get_nullable_value(&mut config, "javascript.lineWidth", &mut diagnostics).or(line_width),
     javascript_quote_style: get_nullable_value(&mut config, "javascript.quoteStyle", &mut diagnostics).or(quote_style),
+    json_enabled: get_nullable_value(&mut config, "json.enabled", &mut diagnostics),
     json_indent_style: get_nullable_value(&mut config, "json.indentStyle", &mut diagnostics).or(indent_style),
     json_indent_width: get_nullable_value(&mut config, "json.indentWidth", &mut diagnostics)
       .or_else(|| get_nullable_value(&mut config, "json.indentSize", &mut diagnostics))
@@ -96,6 +98,8 @@ pub fn resolve_config(
     javascript_grit_metavariables: get_nullable_value(&mut config, "javascript.gritMetavariables", &mut diagnostics)
       .or(grit_metavariables),
     css_tailwind_directives: get_nullable_value(&mut config, "css.tailwindDirectives", &mut diagnostics),
+    jsonc_enabled: get_nullable_value(&mut config, "jsonc.enabled", &mut diagnostics),
+    typescript_enabled: get_nullable_value(&mut config, "typescript.enabled", &mut diagnostics),
   };
 
   diagnostics.extend(get_unknown_property_diagnostics(config));
