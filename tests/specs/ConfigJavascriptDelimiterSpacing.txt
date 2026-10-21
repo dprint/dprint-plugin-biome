@@ -1,0 +1,7 @@
+-- file.ts --
+~~ javascript.delimiterSpacing: true ~~
+== should format with JavascriptDelimiterSpacing ==
+const x=foo([1,2]);
+
+[expect]
+const x = foo( [ 1, 2 ] );

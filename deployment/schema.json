@@ -75,6 +75,16 @@
     "lineWidth": {
       "$ref": "#/definitions/lineWidth"
     },
+    "css.delimiterSpacing": {
+      "description": "Insert spaces inside single-line delimiters.",
+      "type": "boolean",
+      "default": false
+    },
+    "css.trailingNewline": {
+      "description": "Add a trailing newline at the end of the file.",
+      "type": "boolean",
+      "default": true
+    },
     "css.enabled": {
       "description": "Enable css formatting.",
       "default": false,
@@ -97,15 +107,15 @@
       "default": false,
       "type": "boolean"
     },
-    "css.gritMetavariables": {
-      "description": "Enable parsing of GritQL metavariables in CSS. Overrides top-level gritMetavariables.",
-      "default": false,
-      "type": "boolean"
-    },
     "css.tailwindDirectives": {
       "description": "Enable parsing of Tailwind CSS 4.0 directives and functions.",
       "default": false,
       "type": "boolean"
+    },
+    "graphql.trailingNewline": {
+      "description": "Add a trailing newline at the end of the file.",
+      "type": "boolean",
+      "default": true
     },
     "graphql.enabled": {
       "description": "Enable graphql formatting.",
@@ -128,6 +138,44 @@
       "description": "Surround the inner contents of some braces with spaces.",
       "default": true,
       "type": "boolean"
+    },
+    "javascript.delimiterSpacing": {
+      "description": "Insert spaces inside single-line delimiters.",
+      "type": "boolean",
+      "default": false
+    },
+    "javascript.trailingNewline": {
+      "description": "Add a trailing newline at the end of the file.",
+      "type": "boolean",
+      "default": true
+    },
+    "javascript.attributePosition": {
+      "description": "Control the placement of JSX attributes.",
+      "type": "string",
+      "default": "auto",
+      "enum": [
+        "auto",
+        "multiline"
+      ]
+    },
+    "javascript.expand": {
+      "description": "Control expansion of objects and arrays onto multiple lines.",
+      "type": "string",
+      "default": "auto",
+      "enum": [
+        "auto",
+        "always",
+        "never"
+      ]
+    },
+    "javascript.operatorLinebreak": {
+      "description": "Place line breaks before or after binary operators.",
+      "type": "string",
+      "default": "after",
+      "enum": [
+        "after",
+        "before"
+      ]
     },
     "javascript.enabled": {
       "description": "Whether to format JavaScript and JSX files.",
@@ -156,10 +204,39 @@
       "default": true,
       "type": "boolean"
     },
-    "javascript.gritMetavariables": {
-      "description": "Enable parsing of GritQL metavariables in JavaScript/TypeScript. Overrides top-level gritMetavariables.",
-      "default": false,
-      "type": "boolean"
+    "json.delimiterSpacing": {
+      "description": "Insert spaces inside single-line delimiters.",
+      "type": "boolean",
+      "default": false
+    },
+    "json.trailingNewline": {
+      "description": "Add a trailing newline at the end of the file.",
+      "type": "boolean",
+      "default": true
+    },
+    "json.expand": {
+      "description": "Control expansion of objects and arrays onto multiple lines.",
+      "type": "string",
+      "default": "auto",
+      "enum": [
+        "auto",
+        "always",
+        "never"
+      ]
+    },
+    "json.trailingCommas": {
+      "description": "Print trailing commas in multiline JSON arrays and objects. Use all only for JSON variants that allow trailing commas.",
+      "type": "string",
+      "default": "none",
+      "enum": [
+        "none",
+        "all"
+      ]
+    },
+    "json.bracketSpacing": {
+      "description": "Surround the inner contents of braces with spaces.",
+      "type": "boolean",
+      "default": true
     },
     "json.enabled": {
       "description": "Whether to format JSON files.",
@@ -233,11 +310,6 @@
     "bracketSpacing": {
       "description": "Surround the inner contents of some braces with spaces.",
       "default": true,
-      "type": "boolean"
-    },
-    "gritMetavariables": {
-      "description": "Enable parsing of GritQL metavariables.",
-      "default": false,
       "type": "boolean"
     }
   }

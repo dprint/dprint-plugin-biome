@@ -1,0 +1,10 @@
+-- file.ts --
+~~ javascript.operatorLinebreak: before, javascript.lineWidth: 30 ~~
+== should format with JavascriptOperatorLinebreak ==
+const x = firstLongVariableName + secondLongVariableName + thirdLongVariableName;
+
+[expect]
+const x =
+	firstLongVariableName
+	+ secondLongVariableName
+	+ thirdLongVariableName;

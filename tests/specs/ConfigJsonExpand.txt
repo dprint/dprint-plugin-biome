@@ -1,0 +1,12 @@
+-- file.json --
+~~ json.expand: always ~~
+== should format with JsonExpand ==
+{"a":[1,2]}
+
+[expect]
+{
+	"a": [
+		1,
+		2
+	]
+}

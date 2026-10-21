@@ -1,0 +1,9 @@
+-- file.css --
+~~ css.trailingNewline: false, css.enabled: true ~~
+== should format with CssTrailingNewline ==
+a{color:red}
+
+[expect]
+a {
+	color: red;
+}

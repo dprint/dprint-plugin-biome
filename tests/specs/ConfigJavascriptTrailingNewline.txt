@@ -1,0 +1,7 @@
+-- file.ts --
+~~ javascript.trailingNewline: false ~~
+== should format with JavascriptTrailingNewline ==
+const x=1;
+
+[expect]
+const x = 1;

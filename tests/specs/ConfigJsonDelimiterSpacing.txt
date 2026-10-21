@@ -1,0 +1,7 @@
+-- file.json --
+~~ json.delimiterSpacing: true ~~
+== should format with JsonDelimiterSpacing ==
+[1,2]
+
+[expect]
+[ 1, 2 ]

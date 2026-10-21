@@ -67,26 +67,76 @@ pub enum TrailingComma {
 
 generate_str_to_from![TrailingComma, [All, "all"], [Es5, "es5"], [None, "none"]];
 
+#[derive(Clone, PartialEq, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Expand {
+  Auto,
+  Always,
+  Never,
+}
+
+generate_str_to_from![Expand, [Auto, "auto"], [Always, "always"], [Never, "never"]];
+
+#[derive(Clone, PartialEq, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum AttributePosition {
+  Auto,
+  Multiline,
+}
+
+generate_str_to_from![AttributePosition, [Auto, "auto"], [Multiline, "multiline"]];
+
+#[derive(Clone, PartialEq, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum OperatorLinebreak {
+  After,
+  Before,
+}
+
+generate_str_to_from![OperatorLinebreak, [After, "after"], [Before, "before"]];
+
+#[derive(Clone, PartialEq, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum JsonTrailingCommas {
+  None,
+  All,
+}
+
+generate_str_to_from![JsonTrailingCommas, [None, "none"], [All, "all"]];
+
 #[derive(Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Configuration {
   pub line_ending: Option<LineEnding>,
+  pub css_delimiter_spacing: Option<bool>,
+  pub css_trailing_newline: Option<bool>,
   pub css_enabled: Option<bool>,
   pub css_indent_style: Option<IndentStyle>,
   pub css_indent_width: Option<u8>,
   pub css_line_width: Option<u16>,
   pub css_quote_style: Option<QuoteStyle>,
+  pub graphql_trailing_newline: Option<bool>,
   pub graphql_enabled: Option<bool>,
   pub graphql_indent_style: Option<IndentStyle>,
   pub graphql_indent_width: Option<u8>,
   pub graphql_line_width: Option<u16>,
   pub graphql_quote_style: Option<QuoteStyle>,
   pub graphql_bracket_spacing: Option<bool>,
+  pub javascript_delimiter_spacing: Option<bool>,
+  pub javascript_trailing_newline: Option<bool>,
+  pub javascript_attribute_position: Option<AttributePosition>,
+  pub javascript_expand: Option<Expand>,
+  pub javascript_operator_linebreak: Option<OperatorLinebreak>,
   pub javascript_enabled: Option<bool>,
   pub javascript_indent_style: Option<IndentStyle>,
   pub javascript_indent_width: Option<u8>,
   pub javascript_line_width: Option<u16>,
   pub javascript_quote_style: Option<QuoteStyle>,
+  pub json_delimiter_spacing: Option<bool>,
+  pub json_trailing_newline: Option<bool>,
+  pub json_expand: Option<Expand>,
+  pub json_trailing_commas: Option<JsonTrailingCommas>,
+  pub json_bracket_spacing: Option<bool>,
   pub json_enabled: Option<bool>,
   pub json_indent_style: Option<IndentStyle>,
   pub json_indent_width: Option<u8>,
@@ -99,8 +149,6 @@ pub struct Configuration {
   pub bracket_same_line: Option<bool>,
   pub javascript_bracket_spacing: Option<bool>,
   pub css_css_modules: Option<bool>,
-  pub css_grit_metavariables: Option<bool>,
-  pub javascript_grit_metavariables: Option<bool>,
   pub css_tailwind_directives: Option<bool>,
   pub jsonc_enabled: Option<bool>,
   pub typescript_enabled: Option<bool>,

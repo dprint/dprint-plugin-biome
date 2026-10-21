@@ -1,0 +1,9 @@
+-- file.css --
+~~ css.enabled: true, css.delimiterSpacing: true ~~
+== should format with CssDelimiterSpacing ==
+a{color:rgb(1,2,3)}
+
+[expect]
+a {
+	color: rgb( 1, 2, 3 );
+}

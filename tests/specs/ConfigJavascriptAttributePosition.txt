@@ -1,0 +1,12 @@
+-- file.tsx --
+~~ javascript.attributePosition: multiline ~~
+== should format with JavascriptAttributePosition ==
+const x=<div a="a" b="b"/>;
+
+[expect]
+const x = (
+	<div
+		a="a"
+		b="b"
+	/>
+);

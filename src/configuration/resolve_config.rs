@@ -47,7 +47,6 @@ pub fn resolve_config(
   let quote_style = get_nullable_value(&mut config, "quoteStyle", &mut diagnostics);
   let jsx_quote_style = get_nullable_value(&mut config, "jsxQuoteStyle", &mut diagnostics);
   let bracket_spacing = get_nullable_value(&mut config, "bracketSpacing", &mut diagnostics);
-  let grit_metavariables: Option<bool> = get_nullable_value(&mut config, "gritMetavariables", &mut diagnostics);
 
   let resolved_config = Configuration {
     line_ending: get_nullable_value(&mut config, "lineEnding", &mut diagnostics).or(
@@ -57,11 +56,14 @@ pub fn resolve_config(
         _ => None,
       },
     ),
+    css_delimiter_spacing: get_nullable_value(&mut config, "css.delimiterSpacing", &mut diagnostics),
+    css_trailing_newline: get_nullable_value(&mut config, "css.trailingNewline", &mut diagnostics),
     css_enabled: get_nullable_value(&mut config, "css.enabled", &mut diagnostics),
     css_indent_width: get_nullable_value(&mut config, "css.indentWidth", &mut diagnostics).or(indent_width),
     css_line_width: get_nullable_value(&mut config, "css.lineWidth", &mut diagnostics).or(line_width),
     css_quote_style: get_nullable_value(&mut config, "css.quoteStyle", &mut diagnostics).or(quote_style),
     css_indent_style: get_nullable_value(&mut config, "css.indentStyle", &mut diagnostics).or(indent_style),
+    graphql_trailing_newline: get_nullable_value(&mut config, "graphql.trailingNewline", &mut diagnostics),
     graphql_enabled: get_nullable_value(&mut config, "graphql.enabled", &mut diagnostics),
     graphql_indent_width: get_nullable_value(&mut config, "graphql.indentWidth", &mut diagnostics).or(indent_width),
     graphql_line_width: get_nullable_value(&mut config, "graphql.lineWidth", &mut diagnostics).or(line_width),
@@ -69,6 +71,11 @@ pub fn resolve_config(
     graphql_indent_style: get_nullable_value(&mut config, "graphql.indentStyle", &mut diagnostics).or(indent_style),
     graphql_bracket_spacing: get_nullable_value(&mut config, "graphql.bracketSpacing", &mut diagnostics)
       .or(bracket_spacing),
+    javascript_delimiter_spacing: get_nullable_value(&mut config, "javascript.delimiterSpacing", &mut diagnostics),
+    javascript_trailing_newline: get_nullable_value(&mut config, "javascript.trailingNewline", &mut diagnostics),
+    javascript_attribute_position: get_nullable_value(&mut config, "javascript.attributePosition", &mut diagnostics),
+    javascript_expand: get_nullable_value(&mut config, "javascript.expand", &mut diagnostics),
+    javascript_operator_linebreak: get_nullable_value(&mut config, "javascript.operatorLinebreak", &mut diagnostics),
     javascript_enabled: get_nullable_value(&mut config, "javascript.enabled", &mut diagnostics),
     javascript_indent_style: get_nullable_value(&mut config, "javascript.indentStyle", &mut diagnostics)
       .or(indent_style),
@@ -77,6 +84,11 @@ pub fn resolve_config(
       .or(indent_width),
     javascript_line_width: get_nullable_value(&mut config, "javascript.lineWidth", &mut diagnostics).or(line_width),
     javascript_quote_style: get_nullable_value(&mut config, "javascript.quoteStyle", &mut diagnostics).or(quote_style),
+    json_delimiter_spacing: get_nullable_value(&mut config, "json.delimiterSpacing", &mut diagnostics),
+    json_trailing_newline: get_nullable_value(&mut config, "json.trailingNewline", &mut diagnostics),
+    json_expand: get_nullable_value(&mut config, "json.expand", &mut diagnostics),
+    json_trailing_commas: get_nullable_value(&mut config, "json.trailingCommas", &mut diagnostics),
+    json_bracket_spacing: get_nullable_value(&mut config, "json.bracketSpacing", &mut diagnostics).or(bracket_spacing),
     json_enabled: get_nullable_value(&mut config, "json.enabled", &mut diagnostics),
     json_indent_style: get_nullable_value(&mut config, "json.indentStyle", &mut diagnostics).or(indent_style),
     json_indent_width: get_nullable_value(&mut config, "json.indentWidth", &mut diagnostics)
@@ -93,10 +105,6 @@ pub fn resolve_config(
     javascript_bracket_spacing: get_nullable_value(&mut config, "javascript.bracketSpacing", &mut diagnostics)
       .or(bracket_spacing),
     css_css_modules: get_nullable_value(&mut config, "css.cssModules", &mut diagnostics),
-    css_grit_metavariables: get_nullable_value(&mut config, "css.gritMetavariables", &mut diagnostics)
-      .or(grit_metavariables),
-    javascript_grit_metavariables: get_nullable_value(&mut config, "javascript.gritMetavariables", &mut diagnostics)
-      .or(grit_metavariables),
     css_tailwind_directives: get_nullable_value(&mut config, "css.tailwindDirectives", &mut diagnostics),
     jsonc_enabled: get_nullable_value(&mut config, "jsonc.enabled", &mut diagnostics),
     typescript_enabled: get_nullable_value(&mut config, "typescript.enabled", &mut diagnostics),

@@ -152,39 +152,6 @@ fn language_enabled_defaults() {
 }
 
 #[test]
-fn grit_metavariables_js() {
-  let config = Configuration {
-    javascript_grit_metavariables: Some(true),
-    ..Default::default()
-  };
-  let result = format_text(&PathBuf::from("./file.ts"), "const x = µvar_name;\n", &config);
-  assert!(result.is_ok());
-}
-
-#[test]
-fn grit_metavariables_top_level_resolves_to_both() {
-  let mut config_map = ConfigKeyMap::new();
-  config_map.insert("gritMetavariables".to_string(), ConfigKeyValue::from_bool(true));
-  let global_config = GlobalConfiguration::default();
-  let result = resolve_config(config_map, &global_config);
-  assert!(result.diagnostics.is_empty());
-  assert_eq!(result.config.javascript_grit_metavariables, Some(true));
-  assert_eq!(result.config.css_grit_metavariables, Some(true));
-}
-
-#[test]
-fn grit_metavariables_language_specific_overrides() {
-  let mut config_map = ConfigKeyMap::new();
-  config_map.insert("gritMetavariables".to_string(), ConfigKeyValue::from_bool(true));
-  config_map.insert("css.gritMetavariables".to_string(), ConfigKeyValue::from_bool(false));
-  let global_config = GlobalConfiguration::default();
-  let result = resolve_config(config_map, &global_config);
-  assert!(result.diagnostics.is_empty());
-  assert_eq!(result.config.javascript_grit_metavariables, Some(true));
-  assert_eq!(result.config.css_grit_metavariables, Some(false));
-}
-
-#[test]
 fn css_modules_config_resolves() {
   let mut config_map = ConfigKeyMap::new();
   config_map.insert("css.cssModules".to_string(), ConfigKeyValue::from_bool(true));

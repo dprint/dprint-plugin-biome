@@ -1,0 +1,13 @@
+-- file.ts --
+~~ javascript.expand: always ~~
+== should format with JavascriptExpand ==
+const x={a:1}; const y=[1,2];
+
+[expect]
+const x = {
+	a: 1,
+};
+const y = [
+	1,
+	2,
+];

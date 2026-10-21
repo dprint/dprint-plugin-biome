@@ -1,0 +1,7 @@
+-- file.json --
+~~ json.trailingNewline: false ~~
+== should format with JsonTrailingNewline ==
+[1,2]
+
+[expect]
+[1, 2]

@@ -60,7 +60,6 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         JsonParserOptions {
           allow_comments: true,
           allow_trailing_commas: true,
-          allow_metavariables: config.javascript_grit_metavariables.unwrap_or(false),
         },
       );
       if tree.has_errors() {
@@ -93,7 +92,6 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
         syntax,
         JsParserOptions {
           parse_class_parameter_decorators: true,
-          grit_metavariables: config.javascript_grit_metavariables.unwrap_or(false),
         },
       );
       if tree.has_errors() {
@@ -120,9 +118,7 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
           } else {
             CssModulesKind::None
           },
-          grit_metavariables: config.css_grit_metavariables.unwrap_or(false),
           tailwind_directives: config.css_tailwind_directives.unwrap_or(false),
-          ..Default::default()
         },
       );
       if tree.has_errors() {
@@ -187,6 +183,29 @@ fn build_json_options(config: &Configuration) -> Result<JsonFormatOptions, Forma
         .map_err(|err| FormatError::Config(format!("{} (Value: {})", err, line_width)))?,
     );
   }
+  if let Some(value) = config.json_delimiter_spacing {
+    options = options.with_delimiter_spacing(value.into());
+  }
+  if let Some(value) = config.json_trailing_newline {
+    options = options.with_trailing_newline(value.into());
+  }
+  if let Some(value) = config.json_expand {
+    options = options.with_expand(match value {
+      crate::configuration::Expand::Auto => biome_formatter::Expand::Auto,
+      crate::configuration::Expand::Always => biome_formatter::Expand::Always,
+      crate::configuration::Expand::Never => biome_formatter::Expand::Never,
+    });
+  }
+  if let Some(value) = config.json_trailing_commas {
+    options = options.with_trailing_commas(match value {
+      crate::configuration::JsonTrailingCommas::None => biome_json_formatter::context::TrailingCommas::None,
+      crate::configuration::JsonTrailingCommas::All => biome_json_formatter::context::TrailingCommas::All,
+    });
+  }
+  if let Some(value) = config.json_bracket_spacing {
+    options = options.with_bracket_spacing(value.into());
+  }
+
   Ok(options)
 }
 
@@ -215,6 +234,20 @@ fn build_css_options(config: &Configuration, syntax: CssFileSource) -> Result<Cs
       crate::configuration::QuoteStyle::Double => QuoteStyle::Double,
     })
   }
+  if let Some(value) = config.css_delimiter_spacing {
+    options = options.with_delimiter_spacing(value.into());
+  }
+  if let Some(value) = config.css_trailing_newline {
+    options = options.with_trailing_newline(value.into());
+  }
+  if let Some(value) = config.line_ending {
+    options = options.with_line_ending(match value {
+      crate::configuration::LineEnding::Lf => LineEnding::Lf,
+      crate::configuration::LineEnding::Cr => LineEnding::Cr,
+      crate::configuration::LineEnding::Crlf => LineEnding::Crlf,
+    });
+  }
+
   Ok(options)
 }
 
@@ -246,6 +279,17 @@ fn build_graphql_options(config: &Configuration) -> Result<GraphqlFormatOptions,
   if let Some(bracket_spacing) = config.graphql_bracket_spacing {
     options = options.with_bracket_spacing(bracket_spacing.into());
   }
+  if let Some(value) = config.graphql_trailing_newline {
+    options = options.with_trailing_newline(value.into());
+  }
+  if let Some(value) = config.line_ending {
+    options = options.with_line_ending(match value {
+      crate::configuration::LineEnding::Lf => LineEnding::Lf,
+      crate::configuration::LineEnding::Cr => LineEnding::Cr,
+      crate::configuration::LineEnding::Crlf => LineEnding::Crlf,
+    });
+  }
+
   Ok(options)
 }
 
@@ -325,6 +369,32 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
 
   if let Some(bracket_same_line) = &config.bracket_same_line {
     options = options.with_bracket_same_line((*bracket_same_line).into());
+  }
+
+  if let Some(value) = config.javascript_delimiter_spacing {
+    options = options.with_delimiter_spacing(value.into());
+  }
+  if let Some(value) = config.javascript_trailing_newline {
+    options = options.with_trailing_newline(value.into());
+  }
+  if let Some(value) = config.javascript_attribute_position {
+    options = options.with_attribute_position(match value {
+      crate::configuration::AttributePosition::Auto => biome_formatter::AttributePosition::Auto,
+      crate::configuration::AttributePosition::Multiline => biome_formatter::AttributePosition::Multiline,
+    });
+  }
+  if let Some(value) = config.javascript_expand {
+    options = options.with_expand(match value {
+      crate::configuration::Expand::Auto => biome_formatter::Expand::Auto,
+      crate::configuration::Expand::Always => biome_formatter::Expand::Always,
+      crate::configuration::Expand::Never => biome_formatter::Expand::Never,
+    });
+  }
+  if let Some(value) = config.javascript_operator_linebreak {
+    options = options.with_operator_linebreak(match value {
+      crate::configuration::OperatorLinebreak::After => biome_js_formatter::context::OperatorLinebreak::After,
+      crate::configuration::OperatorLinebreak::Before => biome_js_formatter::context::OperatorLinebreak::Before,
+    });
   }
 
   Ok(options)

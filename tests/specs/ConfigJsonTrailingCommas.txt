@@ -1,0 +1,12 @@
+-- file.jsonc --
+~~ json.trailingCommas: all, json.expand: always ~~
+== should format with JsonTrailingCommas ==
+{"a":[1,2]}
+
+[expect]
+{
+	"a": [
+		1,
+		2,
+	],
+}

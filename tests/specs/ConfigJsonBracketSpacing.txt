@@ -1,0 +1,7 @@
+-- file.json --
+~~ json.bracketSpacing: false, json.expand: never ~~
+== should format with JsonBracketSpacing ==
+{"a":1}
+
+[expect]
+{"a": 1}

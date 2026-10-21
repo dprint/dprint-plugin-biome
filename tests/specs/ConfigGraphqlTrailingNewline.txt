@@ -1,0 +1,9 @@
+-- file.graphql --
+~~ graphql.trailingNewline: false, graphql.enabled: true ~~
+== should format with GraphqlTrailingNewline ==
+query { field }
+
+[expect]
+query {
+	field
+}
