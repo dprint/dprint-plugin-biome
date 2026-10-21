@@ -12,7 +12,8 @@ import { createFromBuffer } from "@dprint/formatter";
 
 const formatter = createFromBuffer(getBuffer());
 
-console.log(
-  formatter.formatText("test.js", "console.log(  5  )"),
-);
+console.log(formatter.formatText({
+  filePath: "test.js",
+  fileText: "console.log(  5  )",
+}));
 ```
