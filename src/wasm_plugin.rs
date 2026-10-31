@@ -37,6 +37,7 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
       file_matching: FileMatchingInfo {
         file_extensions,
         file_names: vec![],
+        additive: false,
       },
     }
   }
