@@ -1,6 +1,6 @@
 {
   "imports": {
-    "automation": "jsr:@dprint/automation@0.12.2",
+    "automation": "jsr:@dprint/automation@0.12.5",
     "octokit": "npm:octokit@^3.1"
   }
 }
