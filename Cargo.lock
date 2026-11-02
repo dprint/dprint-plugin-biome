@@ -714,6 +714,7 @@ dependencies = [
  "biome_json_formatter",
  "biome_json_parser",
  "biome_languages",
+ "biome_text_size",
  "camino",
  "dprint-core",
  "dprint-development",

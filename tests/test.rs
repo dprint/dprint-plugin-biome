@@ -160,3 +160,98 @@ fn css_modules_config_resolves() {
   assert!(result.diagnostics.is_empty());
   assert_eq!(result.config.css_css_modules, Some(true));
 }
+
+#[test]
+fn range_inside_statement_only_formats_that_statement() {
+  let text = "const a  =  1;\nconst b  =  2;\nconst c  =  3;\n";
+  assert_eq!(
+    format_range("file.ts", text, range_of(text, "b  =", "2;")),
+    Some("const a  =  1;\nconst b = 2;\nconst c  =  3;\n".to_string())
+  );
+}
+
+#[test]
+fn range_spanning_statements_formats_each_statement() {
+  let text = "function f() {\n\ta  ;\n\tb  ;\n\tc  ;\n\td  ;\n}\n";
+  assert_eq!(
+    format_range("file.ts", text, range_of(text, "b", "c")),
+    Some("function f() {\n\ta  ;\n\tb;\n\tc;\n\td  ;\n}\n".to_string())
+  );
+}
+
+#[test]
+fn range_already_formatted_returns_no_change() {
+  let text = "const a  =  1;\nconst b = 2;\nconst c  =  3;\n";
+  assert_eq!(format_range("file.ts", text, range_of(text, "const b", "2;")), None);
+  // an empty range has nothing to format
+  let index = text.find('b').unwrap();
+  assert_eq!(format_range("file.ts", text, index..index), None);
+}
+
+#[test]
+fn range_after_multi_byte_chars() {
+  let text = "const s  =  \"héllo 日本\";\nconst b  =  2;\nconst c  =  3;\n";
+  assert_eq!(
+    format_range("file.ts", text, range_of(text, "b  =", "2;")),
+    Some("const s  =  \"héllo 日本\";\nconst b = 2;\nconst c  =  3;\n".to_string())
+  );
+}
+
+#[test]
+fn range_inside_multi_byte_char_is_widened() {
+  let text = "const a  =  1;\nconst s  =  \"日本\";\n";
+  let index = text.find('日').unwrap();
+  assert_eq!(
+    format_range("file.ts", text, index + 1..index + 2),
+    Some("const a  =  1;\nconst s = \"日本\";\n".to_string())
+  );
+}
+
+#[test]
+fn range_past_end_of_text_is_clamped() {
+  let text = "const a  =  1;\n";
+  assert_eq!(
+    format_range("file.ts", text, 0..1000),
+    Some("const a = 1;\n".to_string())
+  );
+}
+
+#[test]
+fn range_json() {
+  let text = "{\n\t\"a\":  [1,2],\n\t\"b\":  [3,4],\n\t\"c\":  [5,6]\n}\n";
+  assert_eq!(
+    format_range("file.json", text, range_of(text, "[3", "4]")),
+    Some("{\n\t\"a\":  [1,2],\n\t\"b\":  [3, 4],\n\t\"c\":  [5,6]\n}\n".to_string())
+  );
+}
+
+#[test]
+fn range_css() {
+  let text = "a {\n\tcolor:red;\n\tbackground:blue;\n}\nb { color:green; }\n";
+  assert_eq!(
+    format_range("file.css", text, range_of(text, "red", "blue")),
+    Some("a {\n\tcolor: red;\n\tbackground: blue;\n}\nb { color:green; }\n".to_string())
+  );
+}
+
+#[test]
+fn range_graphql_is_not_supported() {
+  let text = "query A { a }\nquery   B {   b   }\n";
+  assert_eq!(format_range("file.graphql", text, 0..text.len()), None);
+}
+
+fn format_range(file_name: &str, text: &str, range: std::ops::Range<usize>) -> Option<String> {
+  let config = Configuration {
+    css_enabled: Some(true),
+    graphql_enabled: Some(true),
+    ..Default::default()
+  };
+  format_text_range(&PathBuf::from(file_name), text, range, &config).unwrap()
+}
+
+/// Gets the range from the start of `start` to the end of the first `end` after it.
+fn range_of(text: &str, start: &str, end: &str) -> std::ops::Range<usize> {
+  let start = text.find(start).unwrap();
+  let end = start + text[start..].find(end).unwrap() + end.len();
+  start..end
+}

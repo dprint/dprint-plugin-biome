@@ -5,6 +5,7 @@ use biome_formatter::IndentStyle;
 use biome_formatter::LineEnding;
 use biome_formatter::LineWidth;
 use biome_formatter::QuoteStyle;
+use biome_formatter::rowan::Printed;
 use biome_graphql_formatter::context::GraphqlFormatOptions;
 use biome_js_formatter::context::ArrowParentheses;
 use biome_js_formatter::context::JsFormatOptions;
@@ -18,7 +19,10 @@ use biome_json_parser::ParseDiagnostic;
 use biome_json_parser::parse_json;
 use biome_languages::CssFileSource;
 use biome_languages::JsFileSource;
+use biome_text_size::TextRange;
+use biome_text_size::TextSize;
 use camino::Utf8Path;
+use std::ops::Range;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -43,6 +47,33 @@ pub enum FormatError {
 }
 
 pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -> Result<Option<String>, FormatError> {
+  format(file_path, input_text, None, config)
+}
+
+/// Formats only the syntax nodes that the provided byte range overlaps, leaving the rest of the text as it was.
+///
+/// Biome widens the range to the closest nodes it can format on their own (JavaScript and TypeScript statements and
+/// declarations, JSON values, or CSS rules, declarations and values) and keeps the indentation those nodes already
+/// had. GraphQL isn't supported and returns `None`.
+pub fn format_text_range(
+  file_path: &Path,
+  input_text: &str,
+  range: Range<usize>,
+  config: &Configuration,
+) -> Result<Option<String>, FormatError> {
+  let range = clamp_to_char_boundaries(input_text, range);
+  let (Ok(start), Ok(end)) = (TextSize::try_from(range.start), TextSize::try_from(range.end)) else {
+    return Ok(None);
+  };
+  format(file_path, input_text, Some(TextRange::new(start, end)), config)
+}
+
+fn format(
+  file_path: &Path,
+  input_text: &str,
+  range: Option<TextRange>,
+  config: &Configuration,
+) -> Result<Option<String>, FormatError> {
   let lower_ext = file_path
     .extension()
     .and_then(|ext| ext.to_str())
@@ -65,7 +96,8 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       if tree.has_errors() {
         let trimmed_text = input_text.trim();
         if trimmed_text.is_empty() {
-          return Ok(if trimmed_text == input_text {
+          // only formatting the whole file trims the whitespace
+          return Ok(if range.is_some() || trimmed_text == input_text {
             None
           } else {
             Some(trimmed_text.to_string())
@@ -75,9 +107,16 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       }
 
       let options = build_json_options(config)?;
-      let formatted = biome_json_formatter::format_node(options, &tree.syntax())?;
-      let printed = formatted.print()?;
-      printed.into_code()
+      let syntax = tree.syntax();
+      match range {
+        Some(range) => {
+          let printed = biome_json_formatter::format_range(options, &syntax, range)?;
+          return Ok(splice_printed_range(input_text, printed));
+        }
+        None => biome_json_formatter::format_node(options, &syntax)?
+          .print()?
+          .into_code(),
+      }
     }
     Language::JavaScript | Language::TypeScript => {
       let file_path = file_path.to_string_lossy();
@@ -97,8 +136,16 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       if tree.has_errors() {
         return Err(FormatError::Parse(get_diagnostics_message(tree.into_diagnostics())));
       }
-      let formatted = biome_js_formatter::format_node(options, &tree.syntax(), Vec::new())?;
-      formatted.print()?.into_code()
+      let syntax = tree.syntax();
+      match range {
+        Some(range) => {
+          let printed = biome_js_formatter::format_range(options, &syntax, range)?;
+          return Ok(splice_printed_range(input_text, printed));
+        }
+        None => biome_js_formatter::format_node(options, &syntax, Vec::new())?
+          .print()?
+          .into_code(),
+      }
     }
     Language::Css => {
       let file_path = file_path.to_string_lossy();
@@ -124,10 +171,22 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
       if tree.has_errors() {
         return Err(FormatError::Parse(get_diagnostics_message(tree.into_diagnostics())));
       }
-      let formatted = biome_css_formatter::format_node(options, &tree.syntax())?;
-      formatted.print()?.into_code()
+      let syntax = tree.syntax();
+      match range {
+        Some(range) => {
+          let printed = biome_css_formatter::format_range(options, &syntax, range)?;
+          return Ok(splice_printed_range(input_text, printed));
+        }
+        None => biome_css_formatter::format_node(options, &syntax)?.print()?.into_code(),
+      }
     }
     Language::Graphql => {
+      // Biome hasn't implemented range formatting for GraphQL yet. It formats the innermost node
+      // the range touches and guesses its indentation from the whitespace before it on the line,
+      // which mangles nodes that don't start a line.
+      if range.is_some() {
+        return Ok(None);
+      }
       let options = build_graphql_options(config)?;
       let tree = biome_graphql_parser::parse_graphql(input_text);
       if tree.has_errors() {
@@ -142,6 +201,25 @@ pub fn format_text(file_path: &Path, input_text: &str, config: &Configuration) -
   } else {
     Ok(Some(output))
   }
+}
+
+/// Replaces the part of the input that Biome formatted with the formatted text.
+///
+/// Returns `None` when nothing changed.
+fn splice_printed_range(input_text: &str, printed: Printed) -> Option<String> {
+  // no range means there was nothing to format
+  let source_range = printed.range()?;
+  let source_range = usize::from(source_range.start())..usize::from(source_range.end());
+  let old_text = input_text.get(source_range.clone())?;
+  let new_text = printed.as_code();
+  if old_text == new_text {
+    return None;
+  }
+  let mut formatted = String::with_capacity(input_text.len() - old_text.len() + new_text.len());
+  formatted.push_str(&input_text[..source_range.start]);
+  formatted.push_str(new_text);
+  formatted.push_str(&input_text[source_range.end..]);
+  Some(formatted)
 }
 
 fn get_diagnostics_message(diagnostics: Vec<ParseDiagnostic>) -> String {
@@ -398,6 +476,19 @@ fn build_js_options(config: &Configuration, syntax: JsFileSource) -> Result<JsFo
   }
 
   Ok(options)
+}
+
+/// Clamps the range to the text and widens it to the nearest char boundaries.
+fn clamp_to_char_boundaries(text: &str, range: Range<usize>) -> Range<usize> {
+  let mut end = range.end.min(text.len());
+  let mut start = range.start.min(end);
+  while !text.is_char_boundary(start) {
+    start -= 1;
+  }
+  while !text.is_char_boundary(end) {
+    end += 1;
+  }
+  start..end
 }
 
 #[cfg(test)]
