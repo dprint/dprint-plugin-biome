@@ -39,6 +39,7 @@ biome_languages = { git = "https://github.com/biomejs/biome", tag = "@biomejs/bi
   "lang_graphql",
   "lang_js",
 ] }
+biome_text_size = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.4" }
 camino = "1.1.10"
 dprint-core = { version = "0.75.0", default-features = false }
 serde = { version = "1.0.210", features = ["derive"] }

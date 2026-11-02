@@ -58,7 +58,7 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
         version
       ),
       update_url: Some("https://plugins.dprint.dev/dprint/dprint-plugin-biome/latest.json".to_string()),
-      supports_range_formatting: Some(false),
+      supports_range_formatting: Some(true),
     }
   }
 
@@ -71,12 +71,12 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
     request: SyncFormatRequest<Configuration>,
     _format_with_host: impl FnMut(SyncHostFormatRequest) -> FormatResult,
   ) -> FormatResult {
-    if request.range.is_some() {
-      return Ok(None); // not implemented
-    }
-
     let text = String::from_utf8_lossy(&request.file_bytes);
-    let maybe_text = super::format_text(request.file_path, &text, request.config).map_err(FormatError::new)?;
+    let maybe_text = match request.range {
+      Some(range) => super::format_text_range(request.file_path, &text, range, request.config),
+      None => super::format_text(request.file_path, &text, request.config),
+    }
+    .map_err(FormatError::new)?;
     Ok(maybe_text.map(|t| t.into_bytes()))
   }
 }
