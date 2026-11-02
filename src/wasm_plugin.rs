@@ -58,6 +58,7 @@ impl SyncPluginHandler<Configuration> for BiomePluginHandler {
         version
       ),
       update_url: Some("https://plugins.dprint.dev/dprint/dprint-plugin-biome/latest.json".to_string()),
+      supports_range_formatting: Some(false),
     }
   }
 
