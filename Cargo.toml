@@ -41,13 +41,12 @@ biome_languages = { git = "https://github.com/biomejs/biome", tag = "@biomejs/bi
 ] }
 biome_text_size = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.5" }
 camino = "1.1.10"
-dprint-core = { version = "0.75.0", default-features = false }
+dprint-core = { version = "0.75.2", default-features = false }
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = { version = "1.0", optional = true }
 thiserror = "2"
 
 [dev-dependencies]
-anyhow = "1.0.51"
-dprint-development = "0.10.1"
+dprint-development = "0.12.1"
 pretty_assertions = "1.4.0"
 serde_json = { version = "1.0" }
