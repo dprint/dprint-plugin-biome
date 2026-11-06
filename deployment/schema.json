@@ -2,11 +2,97 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://plugins.dprint.dev/dprint/dprint-plugin-biome/0.0.0/schema.json",
   "type": "object",
+  "x-playground": {
+    "input": [
+      "import {readFile} from 'node:fs/promises'",
+      "",
+      "type Task={id:number,title:string,done:boolean,tags?:string[]}",
+      "",
+      "export async function loadTasks(path:string):Promise<Task[]>{",
+      "const text=await readFile(path,'utf8')",
+      "    return JSON.parse(text).map((item:Task)=>({...item,done:item.done??false}))",
+      "}",
+      "",
+      "export class TaskStore{",
+      "  private tasks=new Map<number,Task>()",
+      "  add(task:Task){this.tasks.set(task.id,task);return this}",
+      "  pending(){return [...this.tasks.values()].filter(t=>!t.done)}",
+      "}",
+      "",
+      "const store=new TaskStore().add({id:1,title:'Write docs',done:false}).add({id:2,title:\"Ship release\",done:true,tags:['release']})",
+      "console.log(`${store.pending().length} tasks left`)"
+    ]
+  },
+  "x-sections": [{
+    "title": "General",
+    "description": "The width, indentation, line endings, quotes, and brace spacing of every language.",
+    "properties": [
+      "lineWidth",
+      "indentWidth",
+      "indentStyle",
+      "lineEnding",
+      "quoteStyle",
+      "bracketSpacing"
+    ]
+  }, {
+    "title": "JavaScript and TypeScript",
+    "description": "The options for JavaScript, TypeScript, JSX, and TSX files.",
+    "properties": [
+      "javascript.enabled",
+      "typescript.enabled",
+      "semicolons",
+      "trailingCommas",
+      "arrowParentheses",
+      "quoteProperties",
+      "javascript.expand",
+      "javascript.operatorLinebreak",
+      "javascript.delimiterSpacing",
+      "javascript.trailingNewline"
+    ]
+  }, {
+    "title": "JSX",
+    "description": "The quotes, attributes, and brackets of JSX elements.",
+    "properties": [
+      "jsxQuoteStyle",
+      "javascript.attributePosition",
+      "bracketSameLine"
+    ]
+  }, {
+    "title": "JSON",
+    "description": "The options for JSON and JSONC files.",
+    "properties": [
+      "json.enabled",
+      "jsonc.enabled",
+      "json.expand",
+      "json.trailingCommas",
+      "json.delimiterSpacing",
+      "json.trailingNewline"
+    ]
+  }, {
+    "title": "CSS",
+    "description": "The options for CSS files, which aren't formatted unless `css.enabled` is `true`.",
+    "properties": [
+      "css.enabled",
+      "css.cssModules",
+      "css.tailwindDirectives",
+      "css.delimiterSpacing",
+      "css.trailingNewline"
+    ]
+  }, {
+    "title": "GraphQL",
+    "description": "The options for GraphQL files, which aren't formatted unless `graphql.enabled` is `true`.",
+    "properties": [
+      "graphql.enabled",
+      "graphql.trailingNewline"
+    ]
+  }],
   "definitions": {
     "indentWidth": {
-      "description": "The number of characters for an indent.",
+      "description": "The number of characters for an indent. A value over 24 is ignored.",
       "default": 2,
-      "type": "number"
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 24
     },
     "indentStyle": {
       "description": "Whether to use tabs or spaces.",
@@ -23,7 +109,9 @@
     "lineWidth": {
       "description": "How many characters can be written on a single line.",
       "default": 80,
-      "type": "number"
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 320
     },
     "quoteStyle": {
       "description": "The type of quote used when representing string literals.",
@@ -34,7 +122,22 @@
         "description": "Use double quotes."
       }, {
         "const": "single",
-        "description": "Use single quotes"
+        "description": "Use single quotes."
+      }]
+    },
+    "expand": {
+      "description": "Control expansion of objects and arrays onto multiple lines.",
+      "type": "string",
+      "default": "auto",
+      "oneOf": [{
+        "const": "auto",
+        "description": "Objects are expanded when the first property is on a new line, and arrays are expanded when they don't fit on a line."
+      }, {
+        "const": "always",
+        "description": "Objects and arrays are always expanded."
+      }, {
+        "const": "never",
+        "description": "Objects and arrays are only expanded when they don't fit on a line."
       }]
     }
   },
@@ -58,7 +161,14 @@
       "$ref": "#/definitions/indentWidth"
     },
     "indentStyle": {
-      "$ref": "#/definitions/indentStyle"
+      "$ref": "#/definitions/indentStyle",
+      "x-example": {
+        "input": [
+          "function run() {",
+          "  start();",
+          "}"
+        ]
+      }
     },
     "semicolons": {
       "description": "Whether to use semicolons.",
@@ -70,7 +180,13 @@
       }, {
         "const": "asNeeded",
         "description": "Semicolons are added only in places where it's needed, to protect from ASI."
-      }]
+      }],
+      "x-example": {
+        "input": [
+          "const value = 5",
+          ";[1, 2].forEach(log)"
+        ]
+      }
     },
     "lineWidth": {
       "$ref": "#/definitions/lineWidth"
@@ -78,7 +194,16 @@
     "css.delimiterSpacing": {
       "description": "Insert spaces inside single-line delimiters.",
       "type": "boolean",
-      "default": false
+      "default": false,
+      "x-example": {
+        "config": { "css.enabled": true },
+        "extension": "css",
+        "input": [
+          "a {",
+          "  color: rgb(0, 0, 0);",
+          "}"
+        ]
+      }
     },
     "css.trailingNewline": {
       "description": "Add a trailing newline at the end of the file.",
@@ -91,19 +216,23 @@
       "type": "boolean"
     },
     "css.indentWidth": {
-      "$ref": "#/definitions/indentWidth"
+      "$ref": "#/definitions/indentWidth",
+      "x-overrides": "indentWidth"
     },
     "css.lineWidth": {
-      "$ref": "#/definitions/lineWidth"
+      "$ref": "#/definitions/lineWidth",
+      "x-overrides": "lineWidth"
     },
     "css.quoteStyle": {
-      "$ref": "#/definitions/quoteStyle"
+      "$ref": "#/definitions/quoteStyle",
+      "x-overrides": "quoteStyle"
     },
     "css.indentStyle": {
-      "$ref": "#/definitions/indentStyle"
+      "$ref": "#/definitions/indentStyle",
+      "x-overrides": "indentStyle"
     },
     "css.cssModules": {
-      "description": "Enable CSS modules support (enables :local and :global selectors).",
+      "description": "Enable CSS modules support (enables `:local` and `:global` selectors).",
       "default": false,
       "type": "boolean"
     },
@@ -123,26 +252,48 @@
       "type": "boolean"
     },
     "graphql.indentWidth": {
-      "$ref": "#/definitions/indentWidth"
+      "$ref": "#/definitions/indentWidth",
+      "x-overrides": "indentWidth"
     },
     "graphql.lineWidth": {
-      "$ref": "#/definitions/lineWidth"
+      "$ref": "#/definitions/lineWidth",
+      "x-overrides": "lineWidth"
     },
     "graphql.quoteStyle": {
-      "$ref": "#/definitions/quoteStyle"
+      "$ref": "#/definitions/quoteStyle",
+      "x-overrides": "quoteStyle"
     },
     "graphql.indentStyle": {
-      "$ref": "#/definitions/indentStyle"
+      "$ref": "#/definitions/indentStyle",
+      "x-overrides": "indentStyle"
     },
     "graphql.bracketSpacing": {
       "description": "Surround the inner contents of some braces with spaces.",
       "default": true,
-      "type": "boolean"
+      "type": "boolean",
+      "x-overrides": "bracketSpacing",
+      "x-example": {
+        "config": { "graphql.enabled": true },
+        "extension": "graphql",
+        "input": [
+          "query {",
+          "  users(filter: {role: ADMIN}) {",
+          "    name",
+          "  }",
+          "}"
+        ]
+      }
     },
     "javascript.delimiterSpacing": {
       "description": "Insert spaces inside single-line delimiters.",
       "type": "boolean",
-      "default": false
+      "default": false,
+      "x-example": {
+        "input": [
+          "const list = [1, 2];",
+          "call(a, b);"
+        ]
+      }
     },
     "javascript.trailingNewline": {
       "description": "Add a trailing newline at the end of the file.",
@@ -153,29 +304,49 @@
       "description": "Control the placement of JSX attributes.",
       "type": "string",
       "default": "auto",
-      "enum": [
-        "auto",
-        "multiline"
-      ]
+      "oneOf": [{
+        "const": "auto",
+        "description": "Attributes are only put on separate lines when the element doesn't fit on a line."
+      }, {
+        "const": "multiline",
+        "description": "Attributes are put on separate lines when there's more than one."
+      }],
+      "x-example": {
+        "extension": "tsx",
+        "input": [
+          "const input = <input type=\"text\" value={name} />;"
+        ]
+      }
     },
     "javascript.expand": {
-      "description": "Control expansion of objects and arrays onto multiple lines.",
-      "type": "string",
-      "default": "auto",
-      "enum": [
-        "auto",
-        "always",
-        "never"
-      ]
+      "$ref": "#/definitions/expand",
+      "x-example": {
+        "input": [
+          "const point = { x: 1, y: 2 };",
+          "const size = {",
+          "  width: 10, height: 20 };"
+        ]
+      }
     },
     "javascript.operatorLinebreak": {
       "description": "Place line breaks before or after binary operators.",
       "type": "string",
       "default": "after",
-      "enum": [
-        "after",
-        "before"
-      ]
+      "oneOf": [{
+        "const": "after",
+        "description": "Line breaks go after the operator."
+      }, {
+        "const": "before",
+        "description": "Line breaks go before the operator."
+      }],
+      "x-example": {
+        "config": { "lineWidth": 40 },
+        "input": [
+          "if (isReady && hasPermission && !isDisabled) {",
+          "  start();",
+          "}"
+        ]
+      }
     },
     "javascript.enabled": {
       "description": "Whether to format JavaScript and JSX files.",
@@ -188,26 +359,37 @@
       "type": "boolean"
     },
     "javascript.indentStyle": {
-      "$ref": "#/definitions/indentStyle"
+      "$ref": "#/definitions/indentStyle",
+      "x-overrides": "indentStyle"
     },
     "javascript.lineWidth": {
-      "$ref": "#/definitions/lineWidth"
+      "$ref": "#/definitions/lineWidth",
+      "x-overrides": "lineWidth"
     },
     "javascript.indentWidth": {
-      "$ref": "#/definitions/indentWidth"
+      "$ref": "#/definitions/indentWidth",
+      "x-overrides": "indentWidth"
     },
     "javascript.quoteStyle": {
-      "$ref": "#/definitions/quoteStyle"
+      "$ref": "#/definitions/quoteStyle",
+      "x-overrides": "quoteStyle"
     },
     "javascript.bracketSpacing": {
       "description": "Surround the inner contents of some braces with spaces.",
       "default": true,
-      "type": "boolean"
+      "type": "boolean",
+      "x-overrides": "bracketSpacing"
     },
     "json.delimiterSpacing": {
       "description": "Insert spaces inside single-line delimiters.",
       "type": "boolean",
-      "default": false
+      "default": false,
+      "x-example": {
+        "extension": "json",
+        "input": [
+          "{ \"tags\": [\"a\", \"b\"] }"
+        ]
+      }
     },
     "json.trailingNewline": {
       "description": "Add a trailing newline at the end of the file.",
@@ -215,28 +397,50 @@
       "default": true
     },
     "json.expand": {
-      "description": "Control expansion of objects and arrays onto multiple lines.",
-      "type": "string",
-      "default": "auto",
-      "enum": [
-        "auto",
-        "always",
-        "never"
-      ]
+      "$ref": "#/definitions/expand",
+      "x-example": {
+        "extension": "json",
+        "input": [
+          "{",
+          "  \"point\": { \"x\": 1, \"y\": 2 },",
+          "  \"size\": {",
+          "    \"width\": 10, \"height\": 20 }",
+          "}"
+        ]
+      }
     },
     "json.trailingCommas": {
-      "description": "Print trailing commas in multiline JSON arrays and objects. Use all only for JSON variants that allow trailing commas.",
+      "description": "Print trailing commas in multiline JSON arrays and objects. Use `all` only for JSON variants that allow trailing commas.",
       "type": "string",
       "default": "none",
-      "enum": [
-        "none",
-        "all"
-      ]
+      "oneOf": [{
+        "const": "none",
+        "description": "Trailing commas are never added."
+      }, {
+        "const": "all",
+        "description": "Trailing commas are added to multi-line arrays and objects."
+      }],
+      "x-example": {
+        "extension": "jsonc",
+        "input": [
+          "{",
+          "  \"name\": \"app\",",
+          "  \"private\": true",
+          "}"
+        ]
+      }
     },
     "json.bracketSpacing": {
       "description": "Surround the inner contents of braces with spaces.",
       "type": "boolean",
-      "default": true
+      "default": true,
+      "x-overrides": "bracketSpacing",
+      "x-example": {
+        "extension": "json",
+        "input": [
+          "[{\"x\": 1}, {\"y\": 2}]"
+        ]
+      }
     },
     "json.enabled": {
       "description": "Whether to format JSON files.",
@@ -249,19 +453,34 @@
       "type": "boolean"
     },
     "json.indentStyle": {
-      "$ref": "#/definitions/indentStyle"
+      "$ref": "#/definitions/indentStyle",
+      "x-overrides": "indentStyle"
     },
     "json.lineWidth": {
-      "$ref": "#/definitions/lineWidth"
+      "$ref": "#/definitions/lineWidth",
+      "x-overrides": "lineWidth"
     },
     "json.indentWidth": {
-      "$ref": "#/definitions/indentWidth"
+      "$ref": "#/definitions/indentWidth",
+      "x-overrides": "indentWidth"
     },
     "quoteStyle": {
-      "$ref": "#/definitions/quoteStyle"
+      "$ref": "#/definitions/quoteStyle",
+      "x-example": {
+        "input": [
+          "const single = 'text';",
+          "const double = \"text\";"
+        ]
+      }
     },
     "jsxQuoteStyle": {
-      "$ref": "#/definitions/quoteStyle"
+      "$ref": "#/definitions/quoteStyle",
+      "x-example": {
+        "extension": "tsx",
+        "input": [
+          "const box = <div className='box' title=\"Box\" />;"
+        ]
+      }
     },
     "trailingCommas": {
       "description": "Print trailing commas wherever possible in multi-line comma-separated syntactic structures.",
@@ -276,7 +495,14 @@
       }, {
         "const": "none",
         "description": "Trailing commas are never added."
-      }]
+      }],
+      "x-example": {
+        "config": { "lineWidth": 40 },
+        "input": [
+          "function createUser(firstName: string, lastName: string) {}",
+          "const user = { firstName: \"Ada\", lastName: \"Lovelace\" };"
+        ]
+      }
     },
     "arrowParentheses": {
       "description": "Whether to add non-necessary parentheses to arrow functions.",
@@ -288,7 +514,13 @@
       }, {
         "const": "asNeeded",
         "description": "Parentheses are added only when necessary."
-      }]
+      }],
+      "x-example": {
+        "input": [
+          "const double = (x) => x * 2;",
+          "const add = (a, b) => a + b;"
+        ]
+      }
     },
     "quoteProperties": {
       "description": "Whether property names inside objects should be quoted.",
@@ -300,17 +532,35 @@
       }, {
         "const": "preserve",
         "description": "Maintains quotes on properties."
-      }]
+      }],
+      "x-example": {
+        "input": [
+          "const headers = { \"accept\": \"json\", \"content-type\": \"text\" };"
+        ]
+      }
     },
     "bracketSameLine": {
       "description": "Place the last angle bracket in JSX tags on the same line as the last attribute.",
       "default": false,
-      "type": "boolean"
+      "type": "boolean",
+      "x-example": {
+        "config": { "lineWidth": 40 },
+        "extension": "tsx",
+        "input": [
+          "const button = <Button className=\"primary\" onClick={save}>Save</Button>;"
+        ]
+      }
     },
     "bracketSpacing": {
       "description": "Surround the inner contents of some braces with spaces.",
       "default": true,
-      "type": "boolean"
+      "type": "boolean",
+      "x-example": {
+        "input": [
+          "import {a, b} from \"./c.ts\";",
+          "const value = {a, b};"
+        ]
+      }
     }
   }
 }
