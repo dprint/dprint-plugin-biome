@@ -26,6 +26,8 @@ const buildJob = job("build", {
       name: "Run script",
       env: {
         OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}",
+        // for the requests the update script makes to GitHub
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
         // The fixer and the reviewer use the default model of the Codex CLI.
         // Set CODEX_MODEL or REVIEW_MODEL here to pin the model of either.
       },
