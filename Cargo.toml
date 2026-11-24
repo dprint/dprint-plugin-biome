@@ -3,7 +3,6 @@ name = "dprint-plugin-biome"
 version = "0.15.7"
 authors = ["David Sherret <dsherret@gmail.com>"]
 edition = "2024"
-homepage = "https://github.com/dprint/dprint-plugin-biome"
 keywords = ["formatting", "formatter", "biome"]
 license = "MIT"
 repository = "https://github.com/dprint/dprint-plugin-biome"
@@ -24,22 +23,22 @@ panic = "abort"
 wasm = ["serde_json", "dprint-core/wasm"]
 
 [dependencies]
-biome_css_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_css_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_diagnostics = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_graphql_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_graphql_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_js_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_js_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_json_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_json_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
-biome_languages = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8", features = [
+biome_css_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_css_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_diagnostics = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_graphql_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_graphql_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_js_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_js_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_json_formatter = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_json_parser = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
+biome_languages = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9", features = [
   "lang_css",
   "lang_graphql",
   "lang_js",
 ] }
-biome_text_size = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.8" }
+biome_text_size = { git = "https://github.com/biomejs/biome", tag = "@biomejs/biome@2.6.9" }
 camino = "1.1.10"
 dprint-core = { version = "0.75.2", default-features = false }
 serde = { version = "1.0.210", features = ["derive"] }
