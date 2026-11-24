@@ -698,7 +698,7 @@ dependencies = [
 
 [[package]]
 name = "dprint-plugin-biome"
-version = "0.15.7"
+version = "0.15.8"
 dependencies = [
  "biome_css_formatter",
  "biome_css_parser",
